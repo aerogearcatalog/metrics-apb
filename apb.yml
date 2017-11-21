@@ -1,0 +1,17 @@
+version: 1.0
+name: prometheus-apb
+description: Install prometheus
+bindable: False
+async: optional
+tags:
+  - mobile-service
+metadata:
+  displayName: Prometheus
+  console.openshift.io/iconClass: fa fa-area-chart
+  serviceName: prometheus
+plans:
+  - name: default
+    description: This default plan deploys prometheus-apb
+    free: True
+    metadata: {}
+    parameters: []

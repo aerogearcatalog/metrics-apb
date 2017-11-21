@@ -1,0 +1,5 @@
+prometheus_image: "docker.io/prom/prometheus"
+prometheus_version: "v2.0.0"
+prometheus_port: "9090"
+prometheus_configmap_name: "prometheus-configmap"
+promethus_configmap_volume_name: "prometheus-configmap-volume"

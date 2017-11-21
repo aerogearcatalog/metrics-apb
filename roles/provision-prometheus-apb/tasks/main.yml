@@ -1,0 +1,64 @@
+- name: Create Prometheus config from template
+  template:
+    src: prometheus-config-map.yml.j2
+    dest: /tmp/prometheus.yml
+
+- name: Create config-map from Prometheus config
+  shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml
+
+- name: create deployment config
+  openshift_v1_deployment_config:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    replicas: 1
+    selector:
+      app: prometheus
+      service: prometheus
+    spec_template_metadata_labels:
+      app: prometheus
+      service: prometheus
+    containers:
+    - env:
+      image: '{{ prometheus_image }}:{{ prometheus_version }}'
+      name: prometheus
+      ports:
+      - container_port: '{{ prometheus_port }}'
+        protocol: TCP
+      volume_mounts:
+        - mount_path: /prometheus
+          name: '{{ promethus_configmap_volume_name }}'
+    volumes:
+      - name: '{{ promethus_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ prometheus_configmap_name }}'
+
+- name: create prometheus service
+  k8s_v1_service:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    annotations:
+      mcp/prometheus: 'enabled'
+    labels:
+      app: prometheus
+      service: prometheus
+    selector:
+      app: prometheus
+      service: prometheus
+    ports:
+      - name: web
+        port: 80
+        target_port: 8080
+
+- name: create prometheus route
+  openshift_v1_route:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    to_name: prometheus
+    spec_port_target_port: web
