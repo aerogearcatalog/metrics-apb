@@ -4,7 +4,10 @@
     dest: /tmp/prometheus.yml
 
 - name: Create config-map from Prometheus config
-  shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml
+  shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml -n '{{ namespace }}'
+
+- name: Give default user view permissions
+  shell: oc policy add-role-to-user view system:serviceaccount:myproject:default -n '{{ namespace }}'
 
 - name: create deployment config
   openshift_v1_deployment_config:
@@ -28,20 +31,22 @@
       - container_port: '{{ prometheus_port }}'
         protocol: TCP
       volume_mounts:
-        - mount_path: /prometheus
+        - mount_path: /etc/prometheus
           name: '{{ promethus_configmap_volume_name }}'
+        - mount_path: /prometheus
+          name: prometheus-volume-1
     volumes:
       - name: '{{ promethus_configmap_volume_name }}'
         config_map:
           defaultMode: 420
           name: '{{ prometheus_configmap_name }}'
+      - name: prometheus-volume-1
+        empty_dir: 
 
 - name: create prometheus service
   k8s_v1_service:
     name: prometheus
     namespace: '{{ namespace }}'
-    annotations:
-      mcp/prometheus: 'enabled'
     labels:
       app: prometheus
       service: prometheus
@@ -51,7 +56,7 @@
     ports:
       - name: web
         port: 80
-        target_port: 8080
+        target_port: '{{ prometheus_port }}'
 
 - name: create prometheus route
   openshift_v1_route:
