@@ -7,7 +7,11 @@ scrape_configs:
     static_configs: 
       - targets: 
           - "localhost:9090"
-  - job_name: mcp-services
+
+  - job_name: mcp-ssl-services
+    scheme: https
+    tls_config: 
+      insecure_skip_verify: true
     kubernetes_sd_configs: 
     - role: service
       namespaces:
@@ -15,30 +19,49 @@ scrape_configs:
           - {{ namespace }}
     metrics_path: /metrics
     relabel_configs: 
-      - 
-        action: keep
-        regex: enabled
+      - action: keep
+        regex: ssl
         source_labels: 
-          - __meta_kubernetes_service_annotation_mcp_prometheus
-      - 
-        source_labels: 
+          - __meta_kubernetes_service_annotation_org_feedhenry_mcp_prometheus
+      - source_labels: 
           - __address__
         target_label: __param_target
-      - 
-        source_labels: 
+      - source_labels: 
           - __param_target
         target_label: instance
-      - 
-        action: labelmap
+      - action: labelmap
         regex: __meta_kubernetes_service_label_(.+)
-      - 
-        source_labels: 
+      - source_labels: 
           - __meta_kubernetes_namespace
         target_label: kubernetes_namespace
-      - 
-        source_labels: 
+      - source_labels: 
           - __meta_kubernetes_service_name
         target_label: kubernetes_name
-    scheme: https
-    tls_config: 
-      insecure_skip_verify: true
+
+  - job_name: mcp-plain-services
+    scheme: http
+    kubernetes_sd_configs: 
+    - role: service
+      namespaces:
+        names:
+          - {{ namespace }}
+    metrics_path: /metrics
+    relabel_configs: 
+      - action: keep
+        regex: plain
+        source_labels:
+          - __meta_kubernetes_service_annotation_org_feedhenry_mcp_prometheus
+      - source_labels: 
+          - __address__
+        target_label: __param_target
+      - source_labels: 
+          - __param_target
+        target_label: instance
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: 
+          - __meta_kubernetes_namespace
+        target_label: kubernetes_namespace
+      - source_labels: 
+          - __meta_kubernetes_service_name
+        target_label: kubernetes_name
