@@ -7,7 +7,7 @@
   shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml -n '{{ namespace }}'
 
 - name: Give default user view permissions
-  shell: oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n '{{ namespace }}'
+  shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n {{ namespace }}'
 
 - name: create prometheus deployment config
   openshift_v1_deployment_config:
@@ -67,8 +67,6 @@
       service: prometheus
     to_name: prometheus
     spec_port_target_port: web
-<<<<<<< HEAD
-=======
     spec_tls_termination: edge
   
 - name: "Retrieve route to prometheus"
