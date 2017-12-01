@@ -7,7 +7,7 @@
   shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml -n '{{ namespace }}'
 
 - name: Give default user view permissions
-  shell: oc policy add-role-to-user view system:serviceaccount:myproject:default -n '{{ namespace }}'
+  shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n {{ namespace }}'
 
 - name: create deployment config
   openshift_v1_deployment_config:
@@ -41,7 +41,7 @@
           defaultMode: 420
           name: '{{ prometheus_configmap_name }}'
       - name: prometheus-volume-1
-        empty_dir: 
+        empty_dir:
 
 - name: create prometheus service
   k8s_v1_service:
