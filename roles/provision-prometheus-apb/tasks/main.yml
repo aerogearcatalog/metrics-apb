@@ -9,7 +9,7 @@
 - name: Give default user view permissions
   shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n {{ namespace }}'
 
-- name: create deployment config
+- name: create prometheus deployment config
   openshift_v1_deployment_config:
     name: prometheus
     namespace: '{{ namespace }}'
@@ -32,11 +32,11 @@
         protocol: TCP
       volume_mounts:
         - mount_path: /etc/prometheus
-          name: '{{ promethus_configmap_volume_name }}'
+          name: '{{ prometheus_configmap_volume_name }}'
         - mount_path: /prometheus
           name: prometheus-volume-1
     volumes:
-      - name: '{{ promethus_configmap_volume_name }}'
+      - name: '{{ prometheus_configmap_volume_name }}'
         config_map:
           defaultMode: 420
           name: '{{ prometheus_configmap_name }}'
@@ -55,7 +55,7 @@
       service: prometheus
     ports:
       - name: web
-        port: 80
+        port: 443
         target_port: '{{ prometheus_port }}'
 
 - name: create prometheus route
@@ -67,3 +67,120 @@
       service: prometheus
     to_name: prometheus
     spec_port_target_port: web
+    spec_tls_termination: edge
+  
+- name: "Retrieve route to prometheus"
+  shell: "oc get routes prometheus -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
+  register: prometheus_route
+
+- name: "Create prometheus secret yaml file"
+  template:
+    src: secret.yml.j2
+    dest: /tmp/secret.yaml
+
+- name: "Create prometheus secret"
+  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
+
+#
+# Provision Grafana
+#
+
+- name: Create Grafana config from template
+  template:
+    src: grafana-config-map.ini.j2
+    dest: /tmp/grafana.ini
+
+- name: Create Grafana datasource config from template
+  template:
+    src: grafana-data-sources.yml.j2
+    dest: /tmp/datasources.yml
+
+- name: Create config-map from Grafana config
+  shell: oc create configmap '{{ grafana_configmap_name }}' --from-file=grafana.ini=/tmp/grafana.ini -n '{{ namespace }}'
+
+- name: create grafana deployment config
+  openshift_v1_deployment_config:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: grafana
+    replicas: 1
+    selector:
+      app: grafana
+      service: grafana
+    spec_template_metadata_labels:
+      app: grafana
+      service: grafana
+    containers:
+    - env:
+      image: '{{ grafana_image }}:{{ grafana_version }}'
+      command:
+        - /usr/sbin/grafana-server
+      args:
+        - '--homepath=/usr/share/grafana'
+        - '--config=/etc/grafana/grafana.ini'
+      name: grafana
+      ports:
+      - container_port: '{{ grafana_port }}'
+        protocol: TCP
+      volume_mounts:
+        - mount_path: /etc/grafana
+          name: '{{ grafana_configmap_volume_name }}'
+        - mount_path: /var/lib/grafana
+          name: grafana-data
+        - mount_path: /var/log/grafana
+          name: grafana-log
+    volumes:
+      - name: '{{ grafana_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_configmap_name }}'
+      - name: grafana-data
+        empty_dir: 
+      - name: grafana-log
+        empty_dir: 
+
+- name: create grafana service
+  k8s_v1_service:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: grafana
+    selector:
+      app: grafana
+      service: grafana
+    ports:
+      - name: web
+        port: 443
+        target_port: '{{ grafana_port }}'
+
+- name: create grafana route
+  openshift_v1_route:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: grafana
+    to_name: grafana
+    spec_port_target_port: web
+    spec_tls_termination: edge
+
+- name: "Retrieve route to grafana"
+  shell: "oc get routes grafana -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
+  register: grafana_route
+
+- name: create data source
+  uri:
+    url: https://{{ grafana_route.stdout }}/api/datasources
+    method: POST
+    user: root
+    password: secret
+    body: "{\"name\":\"prometheus\", \"type\":\"prometheus\", \"url\":\"https://{{prometheus_route.stdout}}\", \"access\":\"proxy\", \"basicAuth\":false, \"jsonData\":{\"tslSkipVerify\":true}}"
+    body_format: json
+    validate_certs: no
+  register: grafana_datasource_response
+  until: grafana_datasource_response.status == 200
+  retries: 600
+  delay: 2
