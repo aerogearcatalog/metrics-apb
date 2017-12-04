@@ -2,4 +2,12 @@ prometheus_image: "docker.io/prom/prometheus"
 prometheus_version: "v2.0.0"
 prometheus_port: 9090
 prometheus_configmap_name: "prometheus-configmap"
-promethus_configmap_volume_name: "prometheus-configmap-volume"
+prometheus_configmap_volume_name: "prometheus-configmap-volume"
+prometheus_secret_name: "prometheus"
+# Grafana values
+grafana_image: "docker.io/grafana/grafana"
+grafana_version: "4.6.2"
+grafana_port: 3000
+grafana_configmap_name: "grafana-configmap"
+grafana_configmap_volume_name: "grafana-configmap-volume"
+grafana_datasources_configmap_name: "grafana-datasources"

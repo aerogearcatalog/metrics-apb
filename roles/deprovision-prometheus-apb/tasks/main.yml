@@ -3,12 +3,10 @@
     namespace: '{{ namespace }}'
     state: absent
 
-
 - k8s_v1_service:
     name: prometheus
     namespace: '{{ namespace }}'
     state: absent
-
 
 - openshift_v1_deployment_config:
     name: prometheus
@@ -17,3 +15,20 @@
 
 - name: Delete Prometheus config-map
   shell: oc delete configmap prometheus-configmap -n '{{ namespace }}'
+
+- name: Delete Prometheus secret
+  shell: oc delete secret prometheus -n '{{ namespace }}'
+
+- openshift_v1_deployment_config:
+    name: grafana
+    namespace: '{{ namespace }}'
+    state: absent
+
+- name: Delete Grafana config-map
+  shell: oc delete configmap grafana-configmap -n '{{ namespace }}'
+
+- openshift_v1_route:
+    name: grafana
+    namespace: '{{ namespace }}'
+    state: absent
+
