@@ -177,10 +177,9 @@
     method: POST
     user: root
     password: secret
-    body: "{\"name\":\"prometheus\", \"type\":\"prometheus\", \"url\":\"https://{{prometheus_route.stdout}}\", \"access\":\"proxy\", \"basicAuth\":false, \"jsonData\":{\"tslSkipVerify\":true}}"
+    force_basic_auth: yes
+    body: "{\"name\":\"prometheus\", \"type\":\"prometheus\", \"url\":\"https://{{prometheus_route.stdout}}\", \"access\":\"proxy\", \"isDefault\": true, \"basicAuth\":false, \"jsonData\":{\"tlsSkipVerify\":true}}"
     body_format: json
     validate_certs: no
   register: grafana_datasource_response
   until: grafana_datasource_response.status == 200
-  retries: 600
-  delay: 2
