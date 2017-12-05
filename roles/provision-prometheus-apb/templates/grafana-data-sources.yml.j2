@@ -1,0 +1,18 @@
+datasources:
+- name: Prometheus
+  # <string, required> datasource type. Required
+  type: prometheus
+  # <string, required> access mode. direct or proxy. Required
+  access: proxy
+  # <string> url
+  url: https://{{prometheus_route.stdout}}
+  # <bool> mark as default datasource. Max one per org
+  is_default: true
+  # <map> fields that will be converted to json and stored in json_data
+  json_data: 
+     tlsSkipVerify: true
+  # <string> json object of data that will be encrypted.
+  secure_json_data:
+    tlsSkipVerify: true
+  version: 1
+  editable: true
