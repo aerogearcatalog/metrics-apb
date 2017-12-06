@@ -23,7 +23,21 @@
     spec_template_metadata_labels:
       app: prometheus
       service: prometheus
+    spec_template_spec_service_account_name: '{{ prometheus_proxy_serviceaccount_name }}'
     containers:
+    - name: oauth-proxy
+      image: openshift/oauth-proxy:v1.0.0
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: '{{ proxy_port }}'
+        name: public
+      args:
+      - --provider=openshift
+      - --openshift-service-account={{ prometheus_proxy_serviceaccount_name }}
+      - --upstream=http://localhost:{{ prometheus_port }}
+      - --http-address=0.0.0.0:{{ proxy_port }}
+      - --https-address=
+      - --cookie-secret=SECRET
     - env:
       image: '{{ prometheus_image }}:{{ prometheus_version }}'
       name: prometheus
@@ -56,7 +70,7 @@
     ports:
       - name: web
         port: 443
-        target_port: '{{ prometheus_port }}'
+        target_port: '{{ proxy_port }}'
 
 - name: create prometheus route
   openshift_v1_route:
@@ -80,6 +94,14 @@
 
 - name: "Create prometheus secret"
   shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
+
+- name: "Create Prometheus Proxy Serviceaccount yaml"
+  template:
+    src: prometheus-proxy-sa.yml.j2
+    dest: /tmp/prometheus-proxy-sa.yaml
+
+- name: "Create Prometheus Proxy Serviceaccount"
+  shell: "oc create -f /tmp/prometheus-proxy-sa.yaml -n {{ namespace }}"
 
 #
 # Provision Grafana
@@ -112,7 +134,21 @@
     spec_template_metadata_labels:
       app: grafana
       service: grafana
+    spec_template_spec_service_account_name: '{{ grafana_proxy_serviceaccount_name }}'
     containers:
+    - name: oauth-proxy
+      image: '{{ proxy_image }}:{{ proxy_version }}'
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: '{{ proxy_port }}'
+        name: public
+      args:
+      - --provider=openshift
+      - --openshift-service-account={{ grafana_proxy_serviceaccount_name }}
+      - --upstream=http://localhost:{{ grafana_port }}
+      - --http-address=0.0.0.0:{{ proxy_port }}
+      - --https-address=
+      - --cookie-secret=SECRET
     - env:
       image: '{{ grafana_image }}:{{ grafana_version }}'
       command:
@@ -154,7 +190,7 @@
     ports:
       - name: web
         port: 443
-        target_port: '{{ grafana_port }}'
+        target_port: '{{ proxy_port }}'
 
 - name: create grafana route
   openshift_v1_route:
@@ -170,6 +206,14 @@
 - name: "Retrieve route to grafana"
   shell: "oc get routes grafana -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
   register: grafana_route
+
+- name: "Create Grafana Proxy Serviceaccount yaml"
+  template:
+    src: grafana-proxy-sa.yml.j2
+    dest: /tmp/grafana-proxy-sa.yaml
+
+- name: "Create Grafana Proxy Serviceaccount"
+  shell: "oc create -f /tmp/grafana-proxy-sa.yaml -n {{ namespace }}"
 
 - name: create data source
   uri:
