@@ -52,7 +52,7 @@
       - --openshift-service-account={{ proxy_serviceaccount_name }}
       - --upstream=http://localhost:{{ prometheus_port }}
       - >-
-        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfig","name":"prometheus","verb":"update"}
+        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfigs","name":"prometheus","verb":"update"}
       - --http-address=0.0.0.0:{{ prometheus_proxy_port }}
       - --https-address=
       - --cookie-secret=SECRET
@@ -78,7 +78,7 @@
       - --openshift-service-account={{ proxy_serviceaccount_name }}
       - --upstream=http://localhost:{{ grafana_port }}
       - >-
-        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfig","name":"prometheus","verb":"update"}
+        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfigs","name":"prometheus","verb":"update"}
       - --http-address=0.0.0.0:{{ grafana_proxy_port }}
       - --https-address=
       - --cookie-secret=SECRET
