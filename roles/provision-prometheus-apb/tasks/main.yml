@@ -9,7 +9,23 @@
 - name: Give default user view permissions
   shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n {{ namespace }}'
 
-- name: create prometheus deployment config
+- name: Create Grafana config from template
+  template:
+    src: grafana-config-map.ini.j2
+    dest: /tmp/grafana.ini
+
+- name: Create Grafana datasource config from template
+  template:
+    src: grafana-data-sources.yml.j2
+    dest: /tmp/datasources.yml
+
+- name: Create config-map from Grafana ini config
+  shell: oc create configmap '{{ grafana_ini_configmap_name }}' --from-file=grafana.ini=/tmp/grafana.ini -n '{{ namespace }}'
+
+- name: Create config-map from datasources config
+  shell: oc create configmap '{{ grafana_datasources_configmap_name }}' --from-file=datasources.yml=/tmp/datasources.yml -n '{{ namespace }}'
+
+- name: create prometheus and grafana deployment config
   openshift_v1_deployment_config:
     name: prometheus
     namespace: '{{ namespace }}'
@@ -23,19 +39,19 @@
     spec_template_metadata_labels:
       app: prometheus
       service: prometheus
-    spec_template_spec_service_account_name: '{{ prometheus_proxy_serviceaccount_name }}'
+    spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
-    - name: oauth-proxy
-      image: openshift/oauth-proxy:v1.0.0
+    - name: prometheus-oauth-proxy
+      image: '{{ proxy_image }}:{{ proxy_version }}'
       imagePullPolicy: IfNotPresent
       ports:
-      - containerPort: '{{ proxy_port }}'
+      - containerPort: '{{ prometheus_proxy_port }}'
         name: public
       args:
       - --provider=openshift
-      - --openshift-service-account={{ prometheus_proxy_serviceaccount_name }}
+      - --openshift-service-account={{ proxy_serviceaccount_name }}
       - --upstream=http://localhost:{{ prometheus_port }}
-      - --http-address=0.0.0.0:{{ proxy_port }}
+      - --http-address=0.0.0.0:{{ prometheus_proxy_port }}
       - --https-address=
       - --cookie-secret=SECRET
     - env:
@@ -49,104 +65,17 @@
           name: '{{ prometheus_configmap_volume_name }}'
         - mount_path: /prometheus
           name: prometheus-volume-1
-    volumes:
-      - name: '{{ prometheus_configmap_volume_name }}'
-        config_map:
-          defaultMode: 420
-          name: '{{ prometheus_configmap_name }}'
-      - name: prometheus-volume-1
-        empty_dir:
-
-- name: create prometheus service
-  k8s_v1_service:
-    name: prometheus
-    namespace: '{{ namespace }}'
-    labels:
-      app: prometheus
-      service: prometheus
-    selector:
-      app: prometheus
-      service: prometheus
-    ports:
-      - name: web
-        port: 443
-        target_port: '{{ proxy_port }}'
-
-- name: create prometheus route
-  openshift_v1_route:
-    name: prometheus
-    namespace: '{{ namespace }}'
-    labels:
-      app: prometheus
-      service: prometheus
-    to_name: prometheus
-    spec_port_target_port: web
-    spec_tls_termination: edge
-  
-- name: "Retrieve route to prometheus"
-  shell: "oc get routes prometheus -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
-  register: prometheus_route
-
-- name: "Create prometheus secret yaml file"
-  template:
-    src: secret.yml.j2
-    dest: /tmp/secret.yaml
-
-- name: "Create prometheus secret"
-  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
-
-- name: "Create Prometheus Proxy Serviceaccount yaml"
-  template:
-    src: prometheus-proxy-sa.yml.j2
-    dest: /tmp/prometheus-proxy-sa.yaml
-
-- name: "Create Prometheus Proxy Serviceaccount"
-  shell: "oc create -f /tmp/prometheus-proxy-sa.yaml -n {{ namespace }}"
-
-#
-# Provision Grafana
-#
-
-- name: Create Grafana config from template
-  template:
-    src: grafana-config-map.ini.j2
-    dest: /tmp/grafana.ini
-
-- name: Create Grafana datasource config from template
-  template:
-    src: grafana-data-sources.yml.j2
-    dest: /tmp/datasources.yml
-
-- name: Create config-map from Grafana config
-  shell: oc create configmap '{{ grafana_configmap_name }}' --from-file=grafana.ini=/tmp/grafana.ini -n '{{ namespace }}'
-
-- name: create grafana deployment config
-  openshift_v1_deployment_config:
-    name: grafana
-    namespace: '{{ namespace }}'
-    labels:
-      app: grafana
-      service: grafana
-    replicas: 1
-    selector:
-      app: grafana
-      service: grafana
-    spec_template_metadata_labels:
-      app: grafana
-      service: grafana
-    spec_template_spec_service_account_name: '{{ grafana_proxy_serviceaccount_name }}'
-    containers:
-    - name: oauth-proxy
+    - name: grafana-oauth-proxy
       image: '{{ proxy_image }}:{{ proxy_version }}'
       imagePullPolicy: IfNotPresent
       ports:
-      - containerPort: '{{ proxy_port }}'
+      - containerPort: '{{ grafana_proxy_port }}'
         name: public
       args:
       - --provider=openshift
-      - --openshift-service-account={{ grafana_proxy_serviceaccount_name }}
+      - --openshift-service-account={{ proxy_serviceaccount_name }}
       - --upstream=http://localhost:{{ grafana_port }}
-      - --http-address=0.0.0.0:{{ proxy_port }}
+      - --http-address=0.0.0.0:{{ grafana_proxy_port }}
       - --https-address=
       - --cookie-secret=SECRET
     - env:
@@ -162,68 +91,105 @@
         protocol: TCP
       volume_mounts:
         - mount_path: /etc/grafana
-          name: '{{ grafana_configmap_volume_name }}'
+          name: '{{ grafana_ini_configmap_volume_name }}'
+        - mount_path: /etc/grafana-datasources
+          name: '{{ grafana_datasources_configmap_volume_name }}'
         - mount_path: /var/lib/grafana
           name: grafana-data
         - mount_path: /var/log/grafana
           name: grafana-log
     volumes:
-      - name: '{{ grafana_configmap_volume_name }}'
+      - name: '{{ grafana_ini_configmap_volume_name }}'
         config_map:
           defaultMode: 420
-          name: '{{ grafana_configmap_name }}'
+          name: '{{ grafana_ini_configmap_name }}'
+      - name: '{{ grafana_datasources_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_datasources_configmap_name }}'
       - name: grafana-data
         empty_dir: 
       - name: grafana-log
         empty_dir: 
+      - name: '{{ prometheus_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ prometheus_configmap_name }}'
+      - name: prometheus-volume-1
+        empty_dir: 
+
+- name: create prometheus service
+  k8s_v1_service:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    selector:
+      app: prometheus
+      service: prometheus
+    ports:
+      - name: web
+        port: 443
+        target_port: '{{ prometheus_proxy_port }}'
 
 - name: create grafana service
   k8s_v1_service:
     name: grafana
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: grafana
+      app: prometheus
+      service: prometheus
     selector:
-      app: grafana
-      service: grafana
+      app: prometheus
+      service: prometheus
     ports:
       - name: web
         port: 443
-        target_port: '{{ proxy_port }}'
+        target_port: '{{ grafana_proxy_port }}'
 
 - name: create grafana route
   openshift_v1_route:
     name: grafana
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: grafana
+      app: prometheus
+      service: prometheus
     to_name: grafana
     spec_port_target_port: web
     spec_tls_termination: edge
 
+- name: create prometheus route
+  openshift_v1_route:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    to_name: prometheus
+    spec_port_target_port: web
+    spec_tls_termination: edge
+  
 - name: "Retrieve route to grafana"
   shell: "oc get routes grafana -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
   register: grafana_route
 
-- name: "Create Grafana Proxy Serviceaccount yaml"
+- name: "Retrieve route to prometheus"
+  shell: "oc get routes prometheus -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
+  register: prometheus_route
+
+- name: "Create prometheus secret yaml file"
   template:
-    src: grafana-proxy-sa.yml.j2
-    dest: /tmp/grafana-proxy-sa.yaml
+    src: secret.yml.j2
+    dest: /tmp/secret.yaml
 
-- name: "Create Grafana Proxy Serviceaccount"
-  shell: "oc create -f /tmp/grafana-proxy-sa.yaml -n {{ namespace }}"
+- name: "Create prometheus secret"
+  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
 
-- name: create data source
-  uri:
-    url: https://{{ grafana_route.stdout }}/api/datasources
-    method: POST
-    user: root
-    password: secret
-    force_basic_auth: yes
-    body: "{\"name\":\"prometheus\", \"type\":\"prometheus\", \"url\":\"https://{{prometheus_route.stdout}}\", \"access\":\"proxy\", \"isDefault\": true, \"basicAuth\":false, \"jsonData\":{\"tlsSkipVerify\":true}}"
-    body_format: json
-    validate_certs: no
-  register: grafana_datasource_response
-  until: grafana_datasource_response.status == 200
+- name: "Create OAuth Proxy Serviceaccount yaml"
+  template:
+    src: oauth-proxy-sa.yml.j2
+    dest: /tmp/oauth-proxy-sa.yaml
+
+- name: "Create OAuth Proxy Serviceaccount"
+  shell: "oc create -f /tmp/oauth-proxy-sa.yaml -n {{ namespace }}"
