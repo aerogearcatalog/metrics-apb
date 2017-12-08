@@ -7,7 +7,7 @@
   shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml -n '{{ namespace }}'
 
 - name: Give default user view permissions
-  shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:default -n {{ namespace }}'
+  shell: 'oc policy add-role-to-user view system:serviceaccount:{{ namespace }}:{{ proxy_serviceaccount_name }} -n {{ namespace }}'
 
 - name: Create Grafana config from template
   template:
