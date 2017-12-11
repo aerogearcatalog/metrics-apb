@@ -25,6 +25,13 @@
 - name: Create config-map from datasources config
   shell: oc create configmap '{{ grafana_datasources_configmap_name }}' --from-file=datasources.yml=/tmp/datasources.yml -n '{{ namespace }}'
 
+- name: Create config-map from dashboards config
+  shell: >
+    oc create configmap '{{ grafana_dashboards_configmap_name }}' \
+      --from-file=grafana-primary-dashboard.json={{ role_path }}/files/grafana-primary-dashboard.json \
+      --from-file=grafana-fh-sync-dashboard.json={{ role_path }}/files/grafana-fh-sync-dashboard.json \
+      -n '{{ namespace }}'
+
 - name: create prometheus and grafana deployment config
   openshift_v1_deployment_config:
     name: prometheus
@@ -98,6 +105,8 @@
           name: '{{ grafana_ini_configmap_volume_name }}'
         - mount_path: /etc/grafana-datasources
           name: '{{ grafana_datasources_configmap_volume_name }}'
+        - mount_path: /etc/grafana-dashboards
+          name: '{{ grafana_dashboards_configmap_volume_name }}'
         - mount_path: /var/lib/grafana
           name: grafana-data
         - mount_path: /var/log/grafana
@@ -111,6 +120,10 @@
         config_map:
           defaultMode: 420
           name: '{{ grafana_datasources_configmap_name }}'
+      - name: '{{ grafana_dashboards_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_dashboards_configmap_name }}'
       - name: grafana-data
         empty_dir: 
       - name: grafana-log

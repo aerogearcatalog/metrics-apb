@@ -4,6 +4,10 @@ logs = /var/log/grafana
 plugins = /var/lib/grafana/plugins
 datasources = /etc/grafana-datasources
 
+[dashboards.json]
+enabled = true
+path = /etc/grafana-dashboards
+
 [log]
 # Either "console", "file", "syslog". Default is console and  file
 # Use space to separate multiple modes, e.g. "console file"
