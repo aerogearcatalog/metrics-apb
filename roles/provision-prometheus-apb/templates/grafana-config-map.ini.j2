@@ -1,0 +1,44 @@
+[paths]
+data = /var/lib/grafana
+logs = /var/log/grafana
+plugins = /var/lib/grafana/plugins
+datasources = /etc/grafana-datasources
+
+[dashboards.json]
+enabled = true
+path = /etc/grafana-dashboards
+
+[log]
+# Either "console", "file", "syslog". Default is console and  file
+# Use space to separate multiple modes, e.g. "console file"
+mode = console
+
+[security]
+# default admin user, created on startup
+admin_user = root
+admin_password = secret
+
+[auth.basic]
+# Disable basic auth so the Authorization header from OAuth is ignored
+# See https://github.com/grafana/grafana/issues/2357
+enabled = false
+
+[auth]
+# Set to true to disable (hide) the login form, useful if you use OAuth, defaults to false.
+disable_login_form = true
+
+# Set to true to disable the signout link in the side menu. useful if you use auth.proxy, defaults to false.
+disable_signout_menu = true
+
+[auth.proxy]
+enabled = true
+header_name = X-Forwarded-User
+header_property = username
+auto_sign_up = true
+
+[users]
+# Set to true to automatically add new users to the main organization (id 1). When set to false, new users will automatically cause a new organization to be created for that new user.
+auto_assign_org = true
+
+# The role new users will be assigned for the main organization (if the above setting is set to true). Defaults to Viewer, other valid options are Admin and Editor and Read Only Editor. e.g. :
+auto_assign_org_role = Admin

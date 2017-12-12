@@ -1,19 +1,27 @@
-- openshift_v1_route:
+- name: Delete all resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
+  shell: oc delete all -l app=prometheus -n '{{ namespace }}'
+
+- k8s_v1_secret:
     name: prometheus
     namespace: '{{ namespace }}'
     state: absent
 
-
-- k8s_v1_service:
-    name: prometheus
+- k8s_v1_config_map:
+    name: prometheus-configmap
     namespace: '{{ namespace }}'
     state: absent
 
-
-- openshift_v1_deployment_config:
-    name: prometheus
+- k8s_v1_config_map:
+    name: grafana-ini-configmap
     namespace: '{{ namespace }}'
     state: absent
 
-- name: Delete Prometheus config-map
-  shell: oc delete configmap prometheus-configmap -n '{{ namespace }}'
+- k8s_v1_config_map:
+    name: grafana-datasources-configmap
+    namespace: '{{ namespace }}'
+    state: absent
+
+- k8s_v1_service_account:
+    name: oauth-proxy
+    namespace: '{{ namespace }}'
+    state: absent
