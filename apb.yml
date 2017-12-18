@@ -7,7 +7,9 @@ tags:
   - mobile-service
 metadata:
   displayName: Prometheus
-  console.openshift.io/iconClass: fa fa-area-chart
+  imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
+  documentationUrl: "https://prometheus.io/docs/introduction/overview/"
+  providerDisplayName: "Red Hat, Inc."
   serviceName: prometheus
 plans:
   - name: default
