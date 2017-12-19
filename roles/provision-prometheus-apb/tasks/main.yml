@@ -32,6 +32,33 @@
       --from-file=grafana-fh-sync-dashboard.json={{ role_path }}/files/grafana-fh-sync-dashboard.json \
       -n '{{ namespace }}'
 
+- name: Prometheus PVC
+  k8s_v1_persistent_volume_claim:
+    name: prometheus-claim
+    namespace: "{{ namespace }}"
+    labels:
+      app: prometheus
+      service: prometheus
+    access_modes:
+      - ReadWriteOnce
+    resources_requests:
+      storage: "{{ PROMETHEUS_STORAGE_SIZE }}Gi"
+    state: present
+
+- name: Grafana PVC
+  k8s_v1_persistent_volume_claim:
+    name: grafana-claim
+    namespace: "{{ namespace }}"
+    labels:
+      app: grafana
+      service: prometheus
+    access_modes:
+      - ReadWriteOnce
+    resources_requests:
+      storage: "{{ GRAFANA_STORAGE_SIZE }}Gi"
+    state: present
+
+
 - name: create prometheus and grafana deployment config
   openshift_v1_deployment_config:
     name: prometheus
@@ -125,7 +152,8 @@
           defaultMode: 420
           name: '{{ grafana_dashboards_configmap_name }}'
       - name: grafana-data
-        empty_dir: 
+        persistent_volume_claim:
+          claim_name: grafana-claim 
       - name: grafana-log
         empty_dir: 
       - name: '{{ prometheus_configmap_volume_name }}'
@@ -133,7 +161,8 @@
           defaultMode: 420
           name: '{{ prometheus_configmap_name }}'
       - name: prometheus-volume-1
-        empty_dir: 
+        persistent_volume_claim:
+          claim_name: prometheus-claim 
 
 - name: create prometheus service
   k8s_v1_service:
