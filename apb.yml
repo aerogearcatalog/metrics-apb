@@ -16,4 +16,14 @@ plans:
     description: This default plan deploys prometheus-apb
     free: True
     metadata: {}
-    parameters: []
+    parameters: 
+      - name: GRAFANA_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Grafana Storage Size (Gb)
+      - name: PROMETHEUS_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Prometheus Storage Size (Gb)
