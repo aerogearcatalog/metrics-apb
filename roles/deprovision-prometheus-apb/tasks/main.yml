@@ -30,3 +30,15 @@
     name: oauth-proxy
     namespace: '{{ namespace }}'
     state: absent
+
+- name: Prometheus PVC
+  k8s_v1_persistent_volume_claim:
+    name: prometheus-claim
+    namespace: "{{ namespace }}"
+    state: absent
+
+- name: Grafana PVC
+  k8s_v1_persistent_volume_claim:
+    name: grafana-claim
+    namespace: "{{ namespace }}"
+    state: absent
