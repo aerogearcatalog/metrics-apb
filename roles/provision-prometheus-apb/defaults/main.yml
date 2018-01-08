@@ -8,7 +8,7 @@ prometheus_proxy_port: 4180
 # Grafana values
 grafana_image: "docker.io/grafana/grafana"
 # TODO: Change to 4.7.0 when a tag is available
-grafana_version: "master"
+grafana_version: "latest"
 grafana_port: 3000
 grafana_ini_configmap_name: "grafana-ini-configmap"
 grafana_ini_configmap_volume_name: "grafana-ini-configmap-volume"
