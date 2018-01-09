@@ -58,6 +58,13 @@
       storage: "{{ GRAFANA_STORAGE_SIZE }}Gi"
     state: present
 
+- name: "Create OAuth Proxy Serviceaccount yaml"
+  template:
+    src: oauth-proxy-sa.yml.j2
+    dest: /tmp/oauth-proxy-sa.yaml
+
+- name: "Create OAuth Proxy Serviceaccount"
+  shell: "oc create -f /tmp/oauth-proxy-sa.yaml -n {{ namespace }}"
 
 - name: create prometheus deployment config
   openshift_v1_deployment_config:
@@ -265,10 +272,3 @@
 - name: "Create prometheus secret"
   shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
 
-- name: "Create OAuth Proxy Serviceaccount yaml"
-  template:
-    src: oauth-proxy-sa.yml.j2
-    dest: /tmp/oauth-proxy-sa.yaml
-
-- name: "Create OAuth Proxy Serviceaccount"
-  shell: "oc create -f /tmp/oauth-proxy-sa.yaml -n {{ namespace }}"
