@@ -1,4 +1,4 @@
-# Prometheus APB
+# Metrics APB
 
 [![](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/aerogearcatalog/prometheus-apb/)
 [![Docker Stars](https://img.shields.io/docker/stars/aerogearcatalog/prometheus-apb.svg)](https://registry.hub.docker.com/v2/repositories/aerogearcatalog/prometheus-apb/stars/count/)

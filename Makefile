@@ -1,6 +1,6 @@
 DOCKERHOST = docker.io
-DOCKERORG = feedhenry
-IMAGENAME = prometheus-apb
+DOCKERORG = aerogearcatalog
+IMAGENAME = metrics-apb
 TAG = latest
 USER=$(shell id -u)
 PWD=$(shell pwd)

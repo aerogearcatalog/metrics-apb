@@ -1,19 +1,19 @@
 version: 1.0
-name: prometheus-apb
-description: Install prometheus
+name: metrics-apb
+description: Install metrics service based on prometheus
 bindable: False
 async: optional
 tags:
   - mobile-service
 metadata:
-  displayName: Prometheus
+  displayName: Metrics
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
   documentationUrl: "https://prometheus.io/docs/introduction/overview/"
   providerDisplayName: "Red Hat, Inc."
   serviceName: prometheus
 plans:
   - name: default
-    description: This default plan deploys prometheus-apb
+    description: This default plan deploys metrics-apb
     free: True
     metadata: {}
     parameters: 
