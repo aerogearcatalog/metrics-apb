@@ -59,7 +59,7 @@
     state: present
 
 
-- name: create prometheus and grafana deployment config
+- name: create prometheus deployment config
   openshift_v1_deployment_config:
     name: prometheus
     namespace: '{{ namespace }}'
@@ -101,6 +101,31 @@
           name: '{{ prometheus_configmap_volume_name }}'
         - mount_path: /prometheus
           name: prometheus-volume-1
+    volumes:
+      - name: '{{ prometheus_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ prometheus_configmap_name }}'
+      - name: prometheus-volume-1
+        persistent_volume_claim:
+          claim_name: prometheus-claim
+
+- name: create grafana deployment config
+  openshift_v1_deployment_config:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    replicas: 1
+    selector:
+      app: grafana
+      service: prometheus
+    spec_template_metadata_labels:
+      app: grafana
+      service: prometheus
+    spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
+    containers:
     - name: grafana-oauth-proxy
       image: '{{ proxy_image }}:{{ proxy_version }}'
       imagePullPolicy: IfNotPresent
@@ -155,14 +180,7 @@
         persistent_volume_claim:
           claim_name: grafana-claim 
       - name: grafana-log
-        empty_dir: 
-      - name: '{{ prometheus_configmap_volume_name }}'
-        config_map:
-          defaultMode: 420
-          name: '{{ prometheus_configmap_name }}'
-      - name: prometheus-volume-1
-        persistent_volume_claim:
-          claim_name: prometheus-claim 
+        empty_dir:
 
 - name: create prometheus service
   k8s_v1_service:
@@ -179,15 +197,30 @@
         port: 443
         target_port: '{{ prometheus_proxy_port }}'
 
-- name: create grafana service
+- name: create internal prometheus service
   k8s_v1_service:
-    name: grafana
+    name: prometheus-internal
     namespace: '{{ namespace }}'
     labels:
       app: prometheus
       service: prometheus
     selector:
       app: prometheus
+      service: prometheus
+    ports:
+      - name: web
+        port: 80
+        target_port: '{{ prometheus_port }}'
+
+- name: create grafana service
+  k8s_v1_service:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    selector:
+      app: grafana
       service: prometheus
     ports:
       - name: web
@@ -199,7 +232,7 @@
     name: grafana
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: grafana
       service: prometheus
     to_name: grafana
     spec_port_target_port: web
