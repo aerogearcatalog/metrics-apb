@@ -1,5 +1,5 @@
 - name: Delete all resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
-  shell: oc delete all -l app=prometheus -n '{{ namespace }}'
+  shell: oc delete all -l app=metrics -n '{{ namespace }}'
 
 - k8s_v1_secret:
     name: prometheus
