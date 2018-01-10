@@ -244,6 +244,7 @@
     to_name: grafana
     spec_port_target_port: web
     spec_tls_termination: edge
+  register: grafana_route
 
 - name: create prometheus route
   openshift_v1_route:
@@ -255,13 +256,6 @@
     to_name: prometheus
     spec_port_target_port: web
     spec_tls_termination: edge
-  
-- name: "Retrieve route to grafana"
-  shell: "oc get routes grafana -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
-  register: grafana_route
-
-- name: "Retrieve route to prometheus"
-  shell: "oc get routes prometheus -n {{ namespace }} | grep -v NAME | awk '{print $2}'"
   register: prometheus_route
 
 - name: "Create prometheus secret yaml file"
