@@ -272,3 +272,18 @@
 - name: "Create prometheus secret"
   shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
 
+# Check the containers in the grafana pod and make sure they are all ready
+- name: "Wait for all grafana containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: grafana_result
+  until: grafana_result.stdout.find("2") != -1
+  retries: 30
+  delay: 5
+
+# Check the containers in the prometheus pod and make sure they are all ready
+- name: "Wait for all prometheus containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: prometheus_result
+  until: prometheus_result.stdout.find("2") != -1
+  retries: 30
+  delay: 5
