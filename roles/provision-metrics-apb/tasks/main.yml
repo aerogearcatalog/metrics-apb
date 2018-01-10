@@ -53,7 +53,7 @@
       app: grafana
       service: prometheus
     access_modes:
-      - ReadWriteOnce
+      - ReadWriteMany
     resources_requests:
       storage: "{{ GRAFANA_STORAGE_SIZE }}Gi"
     state: present
