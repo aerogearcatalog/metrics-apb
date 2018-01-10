@@ -1,6 +1,6 @@
 version: 1.0
 name: metrics-apb
-description: Install metrics service based on prometheus
+description: Installs a metrics service based on Prometheus and Grafana
 bindable: False
 async: optional
 tags:
@@ -13,7 +13,7 @@ metadata:
   serviceName: prometheus
 plans:
   - name: default
-    description: This default plan deploys metrics-apb
+    description: This plan sets up Prometheus and Grafana for metrics and data visualisation
     free: True
     metadata: {}
     parameters: 
