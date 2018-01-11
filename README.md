@@ -17,3 +17,8 @@ The test does the following:
     * we're getting successful response from OpenShift auth proxy server
 
 If the test ends successfully, you should see the message `Pod phase Succeeded without returning test results` in your console output.
+
+## How auto-discovery of services work
+
+See the inline comments [here](roles/provision-metrics-apb/templates/prometheus-config-map.yml.j2) and the
+example config from Prometheus [here](https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml).
