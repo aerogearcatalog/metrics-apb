@@ -17,15 +17,22 @@ scrape_configs:
       namespaces:
         names:
           - {{ namespace }}
-    relabel_configs: 
+    # we use relabeling mechanism of Prometheus to decide if a service is a scrape target.
+    # same mechanism is used to find out the metrics endpoint path.
+    # see example config here: https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
+    relabel_configs:
+        # if the service that is currently checked has the annotation "org.aerogear.metrics/ssl_endpoint", keep it. it will be a scrape target.
       - action: keep
         regex: \/.*
-        source_labels: 
+        source_labels:
+          # explanation of: __meta_kubernetes_service_annotation_org_aerogear_metrics_ssl_endpoint
+          # 1. __meta_kubernetes_service_annotation_ : comes from https://prometheus.io/docs/prometheus/latest/configuration/configuration/#service
+          # 2. org_aerogear_metrics_ssl_endpoint     : the annotation we're looking for. but '.' and '/' are converted to '_'
           - __meta_kubernetes_service_annotation_org_aerogear_metrics_ssl_endpoint
-      - source_labels: 
+      - source_labels:
           - __address__
         target_label: __param_target
-      - source_labels: 
+      - source_labels:
           - __param_target
         target_label: instance
       - action: labelmap
@@ -36,6 +43,7 @@ scrape_configs:
       - source_labels: 
           - __meta_kubernetes_service_name
         target_label: kubernetes_name
+        # set __metrics_path__ from the value of the annotation. Value of __metrics_path__ will be the endpoint path that Prometheus will do requests.
       - source_labels: [__meta_kubernetes_service_annotation_org_aerogear_metrics_ssl_endpoint]
         regex: (.+)
         target_label: __metrics_path__
