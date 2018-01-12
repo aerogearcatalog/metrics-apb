@@ -185,7 +185,7 @@
           name: '{{ grafana_dashboards_configmap_name }}'
       - name: grafana-data
         persistent_volume_claim:
-          claim_name: grafana-claim 
+          claim_name: grafana-claim
       - name: grafana-log
         empty_dir:
 
@@ -233,6 +233,21 @@
       - name: web
         port: 443
         target_port: '{{ grafana_proxy_port }}'
+
+- name: create internal grafana service
+  k8s_v1_service:
+    name: grafana-internal
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    selector:
+      app: grafana
+      service: prometheus
+    ports:
+      - name: web
+        port: 80
+        target_port: '{{ grafana_port }}'
 
 - name: create grafana route
   openshift_v1_route:
