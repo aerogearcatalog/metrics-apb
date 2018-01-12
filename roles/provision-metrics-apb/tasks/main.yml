@@ -25,6 +25,9 @@
 - name: Create config-map from datasources config
   shell: oc create configmap '{{ grafana_datasources_configmap_name }}' --from-file=datasources.yml=/tmp/datasources.yml -n '{{ namespace }}'
 
+- name: Create config-map from dashboards provider config
+  shell: oc create configmap '{{ grafana_dashboards_providers_configmap_name }}' --from-file=provider.yml={{ role_path }}/files/grafana-dashboards-provider.yml -n '{{ namespace }}'
+
 - name: Create config-map from dashboards config
   shell: >
     oc create configmap '{{ grafana_dashboards_configmap_name }}' \
@@ -162,8 +165,10 @@
       volume_mounts:
         - mount_path: /etc/grafana
           name: '{{ grafana_ini_configmap_volume_name }}'
-        - mount_path: /etc/grafana-datasources
+        - mount_path: /etc/grafana/conf/provisioning/datasources
           name: '{{ grafana_datasources_configmap_volume_name }}'
+        - mount_path: /etc/grafana/conf/provisioning/dashboards
+          name: '{{ grafana_dashboards_providers_configmap_volume_name }}'
         - mount_path: /etc/grafana-dashboards
           name: '{{ grafana_dashboards_configmap_volume_name }}'
         - mount_path: /var/lib/grafana
@@ -183,6 +188,10 @@
         config_map:
           defaultMode: 420
           name: '{{ grafana_dashboards_configmap_name }}'
+      - name: '{{ grafana_dashboards_providers_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_dashboards_providers_configmap_name }}'
       - name: grafana-data
         persistent_volume_claim:
           claim_name: grafana-claim

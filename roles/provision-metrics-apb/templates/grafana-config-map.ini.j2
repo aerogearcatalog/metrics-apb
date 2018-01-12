@@ -2,11 +2,11 @@
 data = /var/lib/grafana
 logs = /var/log/grafana
 plugins = /var/lib/grafana/plugins
-datasources = /etc/grafana-datasources
+provisioning = /etc/grafana/conf/provisioning
 
 [dashboards.json]
-enabled = true
-path = /etc/grafana-dashboards
+# enabled = true
+# path = /etc/grafana-dashboards
 
 [log]
 # Either "console", "file", "syslog". Default is console and  file
@@ -42,3 +42,8 @@ auto_assign_org = true
 
 # The role new users will be assigned for the main organization (if the above setting is set to true). Defaults to Viewer, other valid options are Admin and Editor and Read Only Editor. e.g. :
 auto_assign_org_role = Admin
+
+[log]
+
+# Either "debug", "info", "warn", "error", "critical", default is "info"
+level = debug
