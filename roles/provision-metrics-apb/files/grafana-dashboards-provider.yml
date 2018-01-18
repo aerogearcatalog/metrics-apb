@@ -3,4 +3,4 @@
   folder: ''
   type: file
   options:
-    folder: /etc/grafana-dashboards
+    path: /etc/grafana-dashboards
