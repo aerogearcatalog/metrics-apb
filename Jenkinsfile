@@ -19,6 +19,7 @@ node ('apb-test') {
 
         try {
             openshift.newProject(projectName)
+
             openshift.withProject(projectName) {
 
                 stage ('Build') {
