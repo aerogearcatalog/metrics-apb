@@ -3,8 +3,8 @@
 // https://github.com/feedhenry/fh-pipeline-library
 @Library('fh-pipeline-library') _
 
-def repositoryName = 'metrics-apb'
-def projectName = 'ci-apb-test'
+def repositoryName = "metrics-apb"
+def projectName = "test-${repositoryName}-${currentBuild.number}"
 
 stage('Trust') {
     enforceTrustedApproval('aerogear')
