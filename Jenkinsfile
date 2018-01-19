@@ -4,7 +4,7 @@
 @Library('fh-pipeline-library') _
 
 def repositoryName = "metrics-apb"
-def projectName = "test-${repositoryName}-${currentBuild.number}"
+def projectName = "test-${repositoryName}-${currentBuild.startTimeInMillis}"
 
 stage('Trust') {
     enforceTrustedApproval('aerogear')
