@@ -1,0 +1,23 @@
+---
+
+# Global constants
+prometheus_secret_name: "prometheus"
+grafana_ini_configmap_name: "grafana-ini-configmap"
+grafana_ini_configmap_volume_name: "grafana-ini-configmap-volume"
+grafana_datasources_configmap_name: "grafana-datasources-configmap"
+grafana_datasources_configmap_volume_name: "grafana-datasources-configmap-volume"
+grafana_dashboards_configmap_name: "grafana-dashboards-configmap"
+grafana_dashboards_configmap_volume_name: "grafana-dashboards-configmap-volume"
+grafana_claim_name: "grafana-claim"
+grafana_service_name: "grafana"
+grafana_internal_service_name: "grafana-internal"
+grafana_route_name: "grafana"
+grafana_dashboards_providers_configmap_name: "grafana-dashboards-providers-configmap"
+grafana_dashboards_providers_configmap_volume_name: "grafana-dashboards-providers-configmap-volume"
+prometheus_claim_name: "prometheus-claim"
+prometheus_configmap_name: "prometheus-configmap"
+prometheus_configmap_volume_name: "prometheus-configmap-volume"
+prometheus_service_name: "prometheus"
+prometheus_internal_service_name: "prometheus-internal"
+prometheus_route_name: "prometheus"
+proxy_serviceaccount_name: "oauth-proxy"

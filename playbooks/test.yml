@@ -3,6 +3,8 @@
   hosts: localhost
   gather_facts: false
   connection: local
+  vars_files:
+  - /opt/ansible/vars/main.yml
 
   roles:
   - role: ansible.kubernetes-modules
@@ -19,4 +21,11 @@
       name: provision-metrics-apb
   - name: Run the test role.
     include_role:
-      name: test-metrics-apb
+      name: test-provision-apb
+  - name: Run the deprovision role.
+    include_role:
+      name: deprovision-metrics-apb
+  - name: Run the deprovision test role.
+    include_role:
+      name: test-deprovision-apb
+
