@@ -10,22 +10,22 @@
     state: absent
 
 - k8s_v1_config_map:
-    name: prometheus-configmap
+    name: '{{ prometheus_configmap_name }}'
     namespace: '{{ namespace }}'
     state: absent
 
 - k8s_v1_config_map:
-    name: grafana-ini-configmap
+    name: '{{ grafana_ini_configmap_name }}'
     namespace: '{{ namespace }}'
     state: absent
 
 - k8s_v1_config_map:
-    name: grafana-datasources-configmap
+    name: '{{ grafana_datasources_configmap_name }}'
     namespace: '{{ namespace }}'
     state: absent
 
 - k8s_v1_config_map:
-    name: grafana-dashboards-configmap
+    name: '{{ grafana_dashboards_configmap_name }}'
     namespace: '{{ namespace }}'
     state: absent
 
@@ -35,18 +35,18 @@
     state: absent
 
 - k8s_v1_service_account:
-    name: oauth-proxy
+    name: '{{ proxy_serviceaccount_name }}'
     namespace: '{{ namespace }}'
     state: absent
 
 - name: Prometheus PVC
   k8s_v1_persistent_volume_claim:
-    name: prometheus-claim
+    name: '{{ prometheus_claim_name}}'
     namespace: "{{ namespace }}"
     state: absent
 
 - name: Grafana PVC
   k8s_v1_persistent_volume_claim:
-    name: grafana-claim
+    name: '{{ grafana_claim_name}}'
     namespace: "{{ namespace }}"
     state: absent

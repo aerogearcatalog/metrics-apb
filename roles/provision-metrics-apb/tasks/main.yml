@@ -37,7 +37,7 @@
 
 - name: Prometheus PVC
   k8s_v1_persistent_volume_claim:
-    name: prometheus-claim
+    name: '{{ prometheus_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
       app: prometheus
@@ -50,7 +50,7 @@
 
 - name: Grafana PVC
   k8s_v1_persistent_volume_claim:
-    name: grafana-claim
+    name: '{{ grafana_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
       app: grafana
@@ -118,7 +118,7 @@
           name: '{{ prometheus_configmap_name }}'
       - name: prometheus-volume-1
         persistent_volume_claim:
-          claim_name: prometheus-claim
+          claim_name: '{{ prometheus_claim_name}}'
 
 - name: create grafana deployment config
   openshift_v1_deployment_config:
@@ -194,13 +194,13 @@
           name: '{{ grafana_dashboards_providers_configmap_name }}'
       - name: grafana-data
         persistent_volume_claim:
-          claim_name: grafana-claim
+          claim_name: '{{ grafana_claim_name }}'
       - name: grafana-log
         empty_dir:
 
 - name: create prometheus service
   k8s_v1_service:
-    name: prometheus
+    name: '{{ prometheus_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: prometheus
@@ -215,7 +215,7 @@
 
 - name: create internal prometheus service
   k8s_v1_service:
-    name: prometheus-internal
+    name: '{{ prometheus_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: prometheus
@@ -230,7 +230,7 @@
 
 - name: create grafana service
   k8s_v1_service:
-    name: grafana
+    name: '{{ grafana_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: grafana
@@ -245,7 +245,7 @@
 
 - name: create internal grafana service
   k8s_v1_service:
-    name: grafana-internal
+    name: '{{ grafana_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: grafana
@@ -260,7 +260,7 @@
 
 - name: create grafana route
   openshift_v1_route:
-    name: grafana
+    name: '{{ grafana_route_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: grafana
@@ -272,7 +272,7 @@
 
 - name: create prometheus route
   openshift_v1_route:
-    name: prometheus
+    name: '{{ prometheus_route_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: prometheus
