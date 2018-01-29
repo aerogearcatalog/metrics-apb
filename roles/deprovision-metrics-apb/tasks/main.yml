@@ -29,6 +29,11 @@
     namespace: '{{ namespace }}'
     state: absent
 
+- k8s_v1_config_map:
+    name: grafana-dashboards-providers-configmap
+    namespace: '{{ namespace }}'
+    state: absent
+
 - k8s_v1_service_account:
     name: oauth-proxy
     namespace: '{{ namespace }}'
