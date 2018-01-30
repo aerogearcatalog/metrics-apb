@@ -1,7 +1,7 @@
 ---
 
 # Global constants
-prometheus_secret_name: "prometheus"
+prometheus_secret_name: "metrics"
 grafana_ini_configmap_name: "grafana-ini-configmap"
 grafana_ini_configmap_volume_name: "grafana-ini-configmap-volume"
 grafana_datasources_configmap_name: "grafana-datasources-configmap"
