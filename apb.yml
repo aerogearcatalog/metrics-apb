@@ -10,7 +10,7 @@ metadata:
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
   documentationUrl: "https://prometheus.io/docs/introduction/overview/"
   providerDisplayName: "Red Hat, Inc."
-  serviceName: prometheus
+  serviceName: metrics
 plans:
   - name: default
     description: This plan sets up Prometheus and Grafana for metrics and data visualisation
