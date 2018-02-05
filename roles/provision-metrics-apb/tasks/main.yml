@@ -160,14 +160,8 @@
       - --http-address=0.0.0.0:{{ grafana_proxy_port }}
       - --https-address=
       - --cookie-secret=SECRET
-    - env:
+    - name: grafana
       image: '{{ grafana_image }}:{{ grafana_version }}'
-      command:
-        - /usr/sbin/grafana-server
-      args:
-        - '--homepath=/usr/share/grafana'
-        - '--config=/etc/grafana/grafana.ini'
-      name: grafana
       ports:
       - container_port: '{{ grafana_port }}'
         protocol: TCP
