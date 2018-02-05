@@ -153,8 +153,6 @@
       - --cookie-secret=SECRET
     - name: grafana
       image: '{{ grafana_image }}:{{ grafana_version }}'
-      env:
-        - GF_INSTALL_PLUGINS='grafana-piechart-panel,grafana-worldmap-panel'
       ports:
       - container_port: '{{ grafana_port }}'
         protocol: TCP
