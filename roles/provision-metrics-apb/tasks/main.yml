@@ -41,7 +41,6 @@
   shell: >
     oc create configmap '{{ grafana_dashboards_configmap_name }}' \
       --from-file=grafana-primary-dashboard.json={{ role_path }}/files/grafana-primary-dashboard.json \
-      --from-file=grafana-fh-sync-dashboard.json={{ role_path }}/files/grafana-fh-sync-dashboard.json \
       -n '{{ namespace }}'
 
 - name: Prometheus PVC
