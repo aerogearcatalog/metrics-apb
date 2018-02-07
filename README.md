@@ -7,16 +7,20 @@
 
 ## Testing
 
-If you're adding a new changes want you can easily test your changes by simply running `apb test`
+If you want to test the changes made to this repo, you can do it by simply running `apb test`
 The test does the following:
 1. Builds the APB 
 1. Creates the project in currently targeted OpenShift instance
 1. Runs the `provision` role
-1. Runs the `test` role which checks that
+1. Runs the `test-provision` role which checks that
     * Grafana and Prometheus routes are accessible
     * we're getting successful response from OpenShift auth proxy server
+1. Runs `deprovision` role
+1. Runs `deprovision-test` role which checks that all objects (routes, pods, services) were deprovisioned successfully
 
 If the test ends successfully, you should see the message `Pod phase Succeeded without returning test results` in your console output.
+
+For more information about testing of APBs, check [ansible-playbook-bundle documentation](https://github.com/ansibleplaybookbundle/ansible-playbook-bundle/blob/master/docs/getting_started.md#test)
 
 ## How auto-discovery of services work
 
