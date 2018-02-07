@@ -28,7 +28,7 @@
       "id": 13,
       "panels": [
         {
-          "content": "# Keycloak\n\nKeycloak is an open source Identity and Access Management solution aimed at modern applications and services. It makes it easy to secure applications and services with little to no code.\n\n",
+          "content": "# Keycloak\n\nKeycloak is an open source Identity and Access Management solution aimed at modern applications and services. It makes it easy to secure applications and services with little to no code.\n\nFind out more at [keycloak.org](http://www.keycloak.org/)!\n\n",
           "gridPos": {
             "h": 4,
             "w": 14,
@@ -396,7 +396,7 @@
       "id": 4,
       "panels": [
         {
-          "content": "# Data Synchronization\n\nSync mobile data synchronization framework allows Sync Apps to seamessly continue working when the network conection is lost, and allows them to recover when the network connection is restored.\n\n",
+          "content": "# Data Synchronization\n\nSync mobile data synchronization framework allows Sync Apps to seamessly continue working when the network conection is lost, and allows them to recover when the network connection is restored.\n\nFind out more at [feedhenry.org](http://feedhenry.org/projects/#data-synchronization)!",
           "gridPos": {
             "h": 4,
             "w": 14,
