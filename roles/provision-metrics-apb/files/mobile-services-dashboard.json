@@ -195,7 +195,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "",
+              "expr": "keycloak_info",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -563,7 +563,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "",
+              "expr": "nodejs_version_info",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -577,7 +577,7 @@
           "valueMaps": [
             {
               "op": "=",
-              "text": "1.0.0",
+              "text": "N/A",
               "value": "null"
             }
           ],
