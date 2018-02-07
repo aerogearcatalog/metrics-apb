@@ -7,10 +7,10 @@
 
 ## Testing
 
-If you're adding a new changes want to  can easily test your changes by simply running `apb test`
+If you're adding a new changes want you can easily test your changes by simply running `apb test`
 The test does the following:
 1. Builds the APB 
-1. Creates the project in currently targetted OpenShift instance
+1. Creates the project in currently targeted OpenShift instance
 1. Runs the `provision` role
 1. Runs the `test` role which checks that
     * Grafana and Prometheus routes are accessible
