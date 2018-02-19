@@ -27,9 +27,9 @@
   until: '"Log in with OpenShift" in webpage.content'
 
 - name: Get Grafana dashboards configmap
-  shell: "oc get configmap -o name | grep {{ grafana-dashboards-configmap-name }}"
+  shell: "oc get configmap -o name | grep {{ grafana_dashboards_configmap_name }}"
   register: grafana_dashboards_configmap
-  failed_when: '"{{ grafana-dashboards-configmap-name }}" not in grafana_dashboards_configmap.stdout'
+  failed_when: '"{{ grafana_dashboards_configmap_name }}" not in grafana_dashboards_configmap.stdout'
 
 - name: Get Grafana dashboards providers configmap
   shell: "oc get configmap -o name | grep {{ grafana_dashboards_providers_configmap_name }}"
