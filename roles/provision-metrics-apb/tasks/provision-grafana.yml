@@ -1,0 +1,161 @@
+
+- name: Create Grafana config from template
+  template:
+    src: grafana-config-map.ini.j2
+    dest: /tmp/grafana.ini
+
+- name: Create Grafana datasource config from template
+  template:
+    src: grafana-data-sources.yml.j2
+    dest: /tmp/datasources.yml
+
+- name: Create config-map from Grafana ini config
+  shell: oc create configmap '{{ grafana_ini_configmap_name }}' --from-file=grafana.ini=/tmp/grafana.ini -n '{{ namespace }}'
+
+- name: Create config-map from datasources config
+  shell: oc create configmap '{{ grafana_datasources_configmap_name }}' --from-file=datasources.yml=/tmp/datasources.yml -n '{{ namespace }}'
+
+- name: Create config-map from dashboards provider config
+  shell: oc create configmap '{{ grafana_dashboards_providers_configmap_name }}' --from-file=provider.yml={{ role_path }}/files/grafana-dashboards-provider.yml -n '{{ namespace }}'
+
+- name: Create config-map from dashboards config
+  shell: >
+    oc create configmap '{{ grafana_dashboards_configmap_name }}' \
+      --from-file=grafana-primary-dashboard.json={{ role_path }}/files/grafana-primary-dashboard.json \
+      --from-file=mobile-services-dashboard.json={{ role_path }}/files/mobile-services-dashboard.json \
+      -n '{{ namespace }}'
+
+- name: Grafana PVC
+  k8s_v1_persistent_volume_claim:
+    name: '{{ grafana_claim_name }}'
+    namespace: "{{ namespace }}"
+    labels:
+      app: grafana
+      service: prometheus
+    access_modes:
+      - ReadWriteMany
+    resources_requests:
+      storage: "{{ GRAFANA_STORAGE_SIZE }}Gi"
+    state: present
+
+- name: create grafana deployment config
+  openshift_v1_deployment_config:
+    name: grafana
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    replicas: 1
+    selector:
+      app: grafana
+      service: prometheus
+    spec_template_metadata_labels:
+      app: grafana
+      service: prometheus
+    spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
+    containers:
+    - name: grafana-oauth-proxy
+      image: '{{ proxy_image }}:{{ proxy_version }}'
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: '{{ grafana_proxy_port }}'
+        name: public
+      args:
+      - --provider=openshift
+      - --openshift-service-account={{ proxy_serviceaccount_name }}
+      - --upstream=http://localhost:{{ grafana_port }}
+      - >-
+        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfigs","name":"prometheus","verb":"update"}
+      - --http-address=0.0.0.0:{{ grafana_proxy_port }}
+      - --https-address=
+      - --cookie-secret=SECRET
+    - name: grafana
+      image: '{{ grafana_image }}:{{ grafana_version }}'
+      ports:
+      - container_port: '{{ grafana_port }}'
+        protocol: TCP
+      volume_mounts:
+        - mount_path: /etc/grafana
+          name: '{{ grafana_ini_configmap_volume_name }}'
+        - mount_path: /etc/grafana/conf/provisioning/datasources
+          name: '{{ grafana_datasources_configmap_volume_name }}'
+        - mount_path: /etc/grafana/conf/provisioning/dashboards
+          name: '{{ grafana_dashboards_providers_configmap_volume_name }}'
+        - mount_path: /etc/grafana-dashboards
+          name: '{{ grafana_dashboards_configmap_volume_name }}'
+        - mount_path: /var/lib/grafana
+          name: grafana-data
+        - mount_path: /var/log/grafana
+          name: grafana-log
+    volumes:
+      - name: '{{ grafana_ini_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_ini_configmap_name }}'
+      - name: '{{ grafana_datasources_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_datasources_configmap_name }}'
+      - name: '{{ grafana_dashboards_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_dashboards_configmap_name }}'
+      - name: '{{ grafana_dashboards_providers_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ grafana_dashboards_providers_configmap_name }}'
+      - name: grafana-data
+        persistent_volume_claim:
+          claim_name: '{{ grafana_claim_name }}'
+      - name: grafana-log
+        empty_dir:
+
+- name: create grafana service
+  k8s_v1_service:
+    name: '{{ grafana_service_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    selector:
+      app: grafana
+      service: prometheus
+    ports:
+      - name: web
+        port: 443
+        target_port: '{{ grafana_proxy_port }}'
+
+- name: create internal grafana service
+  k8s_v1_service:
+    name: '{{ grafana_internal_service_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    selector:
+      app: grafana
+      service: prometheus
+    ports:
+      - name: web
+        port: 80
+        target_port: '{{ grafana_port }}'
+
+- name: create grafana route
+  openshift_v1_route:
+    name: '{{ grafana_route_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: grafana
+      service: prometheus
+    to_name: grafana
+    spec_port_target_port: web
+    spec_tls_termination: edge
+  register: grafana_route
+
+# Check the containers in the grafana pod and make sure they are all ready
+- name: "Wait for all grafana containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: grafana_result
+  until: grafana_result.stdout.find("2") != -1
+  retries: 30
+  delay: 5
