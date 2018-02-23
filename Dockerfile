@@ -18,6 +18,8 @@ SVpFCiAgICAgICAgcmVxdWlyZWQ6IFRydWUKICAgICAgICBkZWZhdWx0OiAxMAogICAgICAgIHR5\
 cGU6IG51bWJlcgogICAgICAgIHRpdGxlOiBQcm9tZXRoZXVzIFN0b3JhZ2UgU2l6ZSAoR2IpCg=="
 
 
+
+
 COPY playbooks /opt/apb/actions
 COPY roles /opt/ansible/roles
 COPY vars /opt/ansible/vars

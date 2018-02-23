@@ -1,0 +1,115 @@
+- name: Postgresql PVC
+  k8s_v1_persistent_volume_claim:
+    name: postgresql-data
+    namespace: "{{ namespace }}"
+    labels:
+      app: app-metrics-api
+      service: prometheus
+    access_modes:
+      - ReadWriteMany
+    resources_requests:
+      storage: "10Gi"
+    state: present
+
+- name: create postgres deployment config
+  openshift_v1_deployment_config:
+    name: postgres
+    namespace: '{{ namespace }}'
+    labels:
+      app: postgres
+      service: prometheus
+    replicas: 1
+    selector:
+      app: postgres
+      service: prometheus
+    spec_template_metadata_labels:
+      app: postgres
+      service: prometheus
+    containers:
+    - name: postgresql
+      image: registry.access.redhat.com/rhscl/postgresql-96-rhel7:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+        - container_port: 5432 
+      env:
+      - name: POSTGRESQL_PASSWORD
+        value: postgres
+      - name: POSTGRESQL_USER
+        value: user
+      - name: POSTGRESQL_DATABASE
+        value: aerogear_mobile_metrics
+      volumeMounts:
+        - mountPath: /var/lib/pgsql/data
+          name: postgresql-data
+    volumes:
+      - name: postgresql-data
+        persistentVolumeClaim:
+          claimName: postgresql-data
+
+- name: Create db internal service
+  k8s_v1_service:
+    name: postgres-internal
+    namespace: '{{ namespace }}'
+    labels:
+      app: postgres
+      service: prometheus
+    selector:
+      app: postgres
+      service: prometheus
+    ports:
+      - name: web
+        port: 5432
+        target_port: 5432
+
+- name: Create api server deployment config
+  openshift_v1_deployment_config:
+    name: app-metrics-api
+    namespace: '{{ namespace }}'
+    labels:
+      app: app-metrics-api
+      service: prometheus
+    replicas: 1
+    selector:
+      app: app-metrics-api
+      service: prometheus
+    spec_template_metadata_labels:
+      app: app-metrics-api
+      service: prometheus
+    containers:
+    - name: app-metrics-api
+      image: '{{ api_server_image }}:{{ api_server_version }}'
+      imagePullPolicy: IfNotPresent
+      env:
+      - name: PGHOST
+        value: postgres-internal
+      - name: PGPASSWORD
+        value: postgres
+      - name: PGUSER
+        value: user
+      - name: PGDATABASE
+        value: aerogear_mobile_metrics
+
+- name: Create api server service
+  k8s_v1_service:
+    name: app-metrics-api
+    namespace: '{{ namespace }}'
+    labels:
+      app: app-metrics-api
+      service: prometheus
+    selector:
+      app: app-metrics-api
+      service: prometheus
+    ports:
+      - name: web
+        port: 443
+        target_port: 3000
+
+- name: Create api server route
+  openshift_v1_route:
+    name: api
+    namespace: '{{ namespace }}'
+    labels:
+      app: app-metrics-api
+      service: prometheus
+    to_name: app-metrics-api
+    spec_port_target_port: web
