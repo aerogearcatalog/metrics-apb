@@ -130,3 +130,16 @@
   until: postgres_result.stdout.find("1") != -1
   retries: 30
   delay: 5
+
+- name: Get aerogear-app-metrics route
+  shell: oc get routes --namespace={{ namespace }} | awk -F " " '{print $2}' | grep app-metrics
+  register: app_metrics_route
+
+- name: Wait for app-metrics health endpoint to report healthy
+  uri:
+    url: http://{{ app_metrics_route.stdout }}/healthz
+    status_code: 200
+  register: app_metrics_health
+  until: app_metrics_health.status == 200
+  retries: 30
+  delay: 5
