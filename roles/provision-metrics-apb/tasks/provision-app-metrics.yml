@@ -3,12 +3,12 @@
     name: postgresql-data
     namespace: "{{ namespace }}"
     labels:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     access_modes:
       - ReadWriteMany
     resources_requests:
-      storage: "10Gi"
+      storage: '{{ POSTGRES_STORAGE_SIZE }}Gi'
     state: present
 
 - name: create postgres deployment config
@@ -17,25 +17,25 @@
     namespace: '{{ namespace }}'
     labels:
       app: postgres
-      service: prometheus
+      service: aerogear-app-metrics
     replicas: 1
     selector:
       app: postgres
-      service: prometheus
+      service: aerogear-app-metrics
     spec_template_metadata_labels:
       app: postgres
-      service: prometheus
+      service: aerogear-app-metrics
     containers:
     - name: postgresql
-      image: registry.access.redhat.com/rhscl/postgresql-96-rhel7:latest
+      image: "{{ postgres_image }}:{{ postgres_version }}"
       imagePullPolicy: IfNotPresent
       ports:
-        - container_port: 5432 
+        - container_port: "{{ postgres_port }}"
       env:
       - name: POSTGRESQL_PASSWORD
-        value: postgres
+        value: "{{ postgres_password }}"
       - name: POSTGRESQL_USER
-        value: user
+        value: "{{ postgres_user }}"
       - name: POSTGRESQL_DATABASE
         value: aerogear_mobile_metrics
       volumeMounts:
@@ -52,64 +52,64 @@
     namespace: '{{ namespace }}'
     labels:
       app: postgres
-      service: prometheus
+      service: aerogear-app-metrics
     selector:
       app: postgres
-      service: prometheus
+      service: aerogear-app-metrics
     ports:
-      - name: web
-        port: 5432
-        target_port: 5432
+      - name: postgres
+        port: "{{ postgres_port }}"
+        target_port: "{{ postgres_port }}"
 
 - name: Create api server deployment config
   openshift_v1_deployment_config:
-    name: app-metrics-api
+    name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     replicas: 1
     selector:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     spec_template_metadata_labels:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     containers:
-    - name: app-metrics-api
+    - name: aerogear-app-metrics
       image: '{{ api_server_image }}:{{ api_server_version }}'
       imagePullPolicy: IfNotPresent
       env:
       - name: PGHOST
         value: postgres-internal
       - name: PGPASSWORD
-        value: postgres
+        value: "{{ postgres_password}}"
       - name: PGUSER
-        value: user
+        value: "{{ postgres_user}}"
       - name: PGDATABASE
         value: aerogear_mobile_metrics
 
 - name: Create api server service
   k8s_v1_service:
-    name: app-metrics-api
+    name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     selector:
-      app: app-metrics-api
-      service: prometheus
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
     ports:
       - name: web
         port: 443
-        target_port: 3000
+        target_port: '{{ api_server_port }}'
 
 - name: Create api server route
   openshift_v1_route:
-    name: api
+    name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: app-metrics-api
-      service: prometheus
-    to_name: app-metrics-api
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    to_name: aerogear-app-metrics
     spec_port_target_port: web

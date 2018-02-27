@@ -18,6 +18,6 @@
 - name: "Create OAuth Proxy Serviceaccount"
   shell: "oc create -f /tmp/oauth-proxy-sa.yaml -n {{ namespace }}"
 
-- include_tasks: provision-prometheus.yml
+- include_tasks: provision-prometheus.yml 
 - include_tasks: provision-grafana.yml
 - include_tasks: provision-app-metrics.yml

@@ -27,3 +27,20 @@ plans:
         default: 10
         type: number
         title: Prometheus Storage Size (Gb)
+      - name: POSTGRES_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Postgres Storage Size (Gb)
+      - name: POSTGRES_USER
+        description: Username that will be used to connect to postgres
+        default: user
+        type: string
+        required: False
+        title: Postgres User
+      - name: POSTGRES_PASSWORD
+        description: Password to connect to Postgres ( generated if blank )
+        type: string
+        required: False
+        title: Postgres Password
+        

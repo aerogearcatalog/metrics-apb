@@ -11,9 +11,17 @@ grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
 
-# App Metrics values
-api_server_image: "docker.io/steventobin/aerogear-metrics-api"
+# Api server values
+api_server_image: "docker.io/aerogear/aerogear-app-metrics"
 api_server_version: "latest"
+api_server_port: 3000
+
+# Postgres values
+postgres_image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
+postgres_version: "latest"
+postgres_port: 5432
+postgres_user: "{{ lookup('env','POSTGRES_USER') | default('user', true) }}"
+postgres_password: "{{ lookup('password', '/tmp/pass chars=ascii_letters,digits') }}"
 
 # OAuth Proxy values
 proxy_image: "docker.io/openshift/oauth-proxy"
