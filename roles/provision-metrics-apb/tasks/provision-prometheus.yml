@@ -1,0 +1,129 @@
+- name: Create Prometheus config from template
+  template:
+    src: prometheus-config-map.yml.j2
+    dest: /tmp/prometheus.yml
+
+- name: Create config-map from Prometheus config
+  shell: oc create configmap '{{ prometheus_configmap_name }}' --from-file=/tmp/prometheus.yml -n '{{ namespace }}'
+
+- name: Prometheus PVC
+  k8s_v1_persistent_volume_claim:
+    name: '{{ prometheus_claim_name }}'
+    namespace: "{{ namespace }}"
+    labels:
+      app: prometheus
+      service: prometheus
+    access_modes:
+      - ReadWriteOnce
+    resources_requests:
+      storage: "{{ PROMETHEUS_STORAGE_SIZE }}Gi"
+    state: present
+
+- name: create prometheus deployment config
+  openshift_v1_deployment_config:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    replicas: 1
+    selector:
+      app: prometheus
+      service: prometheus
+    spec_template_metadata_labels:
+      app: prometheus
+      service: prometheus
+    spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
+    containers:
+    - name: prometheus-oauth-proxy
+      image: '{{ proxy_image }}:{{ proxy_version }}'
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: '{{ prometheus_proxy_port }}'
+        name: public
+      args:
+      - --provider=openshift
+      - --openshift-service-account={{ proxy_serviceaccount_name }}
+      - --upstream=http://localhost:{{ prometheus_port }}
+      - >-
+        --openshift-sar={"namespace":"{{ namespace }}","resource":"deploymentconfigs","name":"prometheus","verb":"update"}
+      - --http-address=0.0.0.0:{{ prometheus_proxy_port }}
+      - --https-address=
+      - --cookie-secret=SECRET
+    - env:
+      image: '{{ prometheus_image }}:{{ prometheus_version }}'
+      name: prometheus
+      ports:
+      - container_port: '{{ prometheus_port }}'
+        protocol: TCP
+      volume_mounts:
+        - mount_path: /etc/prometheus
+          name: '{{ prometheus_configmap_volume_name }}'
+        - mount_path: /prometheus
+          name: prometheus-volume-1
+    volumes:
+      - name: '{{ prometheus_configmap_volume_name }}'
+        config_map:
+          defaultMode: 420
+          name: '{{ prometheus_configmap_name }}'
+      - name: prometheus-volume-1
+        persistent_volume_claim:
+          claim_name: '{{ prometheus_claim_name}}'
+
+- name: create prometheus service
+  k8s_v1_service:
+    name: '{{ prometheus_service_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    selector:
+      app: prometheus
+      service: prometheus
+    ports:
+      - name: web
+        port: 443
+        target_port: '{{ prometheus_proxy_port }}'
+
+- name: create internal prometheus service
+  k8s_v1_service:
+    name: '{{ prometheus_internal_service_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    selector:
+      app: prometheus
+      service: prometheus
+    ports:
+      - name: web
+        port: 80
+        target_port: '{{ prometheus_port }}'
+
+- name: create prometheus route
+  openshift_v1_route:
+    name: '{{ prometheus_route_name }}'
+    namespace: '{{ namespace }}'
+    labels:
+      app: prometheus
+      service: prometheus
+    to_name: prometheus
+    spec_port_target_port: web
+    spec_tls_termination: edge
+  register: prometheus_route
+
+- name: "Create prometheus secret yaml file"
+  template:
+    src: secret.yml.j2
+    dest: /tmp/secret.yaml
+
+- name: "Create prometheus secret"
+  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"  
+
+# Check the containers in the prometheus pod and make sure they are all ready
+- name: "Wait for all prometheus containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: prometheus_result
+  until: prometheus_result.stdout.find("2") != -1
+  retries: 30
+  delay: 5

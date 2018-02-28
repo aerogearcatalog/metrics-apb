@@ -1,14 +1,28 @@
+# Prometheus Values
 prometheus_image: "registry.access.redhat.com/openshift3/prometheus"
 prometheus_version: "latest"
 prometheus_port: 9090
 prometheus_proxy_port: 4180
+
 # Grafana values
 grafana_image: "docker.io/aerogearcatalog/grafana"
-# TODO: Change to 4.7.0 when a tag is available
 grafana_version: "latest"
 grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
+
+# Api server values
+api_server_image: "docker.io/aerogear/aerogear-app-metrics"
+api_server_version: "latest"
+api_server_port: 3000
+
+# Postgres values
+postgres_image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
+postgres_version: "latest"
+postgres_port: 5432
+postgres_user: "{{ lookup('env','POSTGRES_USER') | default('user', true) }}"
+postgres_password: "{{ lookup('password', '/tmp/pass chars=ascii_letters,digits') }}"
+
 # OAuth Proxy values
 proxy_image: "docker.io/openshift/oauth-proxy"
 proxy_version: "v1.1.0"

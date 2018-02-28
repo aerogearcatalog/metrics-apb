@@ -1,0 +1,148 @@
+- name: Postgresql PVC
+  k8s_v1_persistent_volume_claim:
+    name: "{{ postgres_claim_name}}"
+    namespace: "{{ namespace }}"
+    labels:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    access_modes:
+      - ReadWriteMany
+    resources_requests:
+      storage: '{{ POSTGRES_STORAGE_SIZE }}Gi'
+    state: present
+
+- name: create postgres deployment config
+  openshift_v1_deployment_config:
+    name: postgres
+    namespace: '{{ namespace }}'
+    labels:
+      app: postgres
+      service: aerogear-app-metrics
+    replicas: 1
+    selector:
+      app: postgres
+      service: aerogear-app-metrics
+    spec_template_metadata_labels:
+      app: postgres
+      service: aerogear-app-metrics
+    containers:
+    - name: postgresql
+      image: "{{ postgres_image }}:{{ postgres_version }}"
+      imagePullPolicy: IfNotPresent
+      ports:
+        - container_port: "{{ postgres_port }}"
+      env:
+      - name: POSTGRESQL_PASSWORD
+        value: "{{ postgres_password }}"
+      - name: POSTGRESQL_USER
+        value: "{{ postgres_user }}"
+      - name: POSTGRESQL_DATABASE
+        value: aerogear_mobile_metrics
+      volumeMounts:
+        - mountPath: /var/lib/pgsql/data
+          name: "{{ postgres_claim_name}}"
+    volumes:
+      - name: "{{ postgres_claim_name}}"
+        persistentVolumeClaim:
+          claimName: "{{ postgres_claim_name}}"
+
+- name: Create db internal service
+  k8s_v1_service:
+    name: postgres-internal
+    namespace: '{{ namespace }}'
+    labels:
+      app: postgres
+      service: aerogear-app-metrics
+    selector:
+      app: postgres
+      service: aerogear-app-metrics
+    ports:
+      - name: postgres
+        port: "{{ postgres_port }}"
+        target_port: "{{ postgres_port }}"
+
+- name: Create api server deployment config
+  openshift_v1_deployment_config:
+    name: aerogear-app-metrics
+    namespace: '{{ namespace }}'
+    labels:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    replicas: 1
+    selector:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    spec_template_metadata_labels:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    containers:
+    - name: aerogear-app-metrics
+      image: '{{ api_server_image }}:{{ api_server_version }}'
+      imagePullPolicy: IfNotPresent
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: "{{ api_server_port }}"
+        initialDelaySeconds: 15
+        timeoutSeconds: 1
+      env:
+      - name: PGHOST
+        value: postgres-internal
+      - name: PGPASSWORD
+        value: "{{ postgres_password}}"
+      - name: PGUSER
+        value: "{{ postgres_user}}"
+      - name: PGDATABASE
+        value: aerogear_mobile_metrics
+
+- name: Create api server service
+  k8s_v1_service:
+    name: aerogear-app-metrics
+    namespace: '{{ namespace }}'
+    labels:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    selector:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    ports:
+      - name: web
+        port: 443
+        target_port: '{{ api_server_port }}'
+
+- name: Create api server route
+  openshift_v1_route:
+    name: aerogear-app-metrics
+    namespace: '{{ namespace }}'
+    labels:
+      app: aerogear-app-metrics
+      service: aerogear-app-metrics
+    to_name: aerogear-app-metrics
+    spec_port_target_port: web
+  register: app_metrics_route
+
+    
+# Check the containers in the aerogear-app-metrics pod and make sure they are all ready
+- name: "Wait for all aerogear-app-metrics containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=aerogear-app-metrics" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: aerogear_app_metrics_result
+  until: aerogear_app_metrics_result.stdout.find("1") != -1
+  retries: 30
+  delay: 5
+
+  # Check the containers in the postgres pod and make sure they are all ready
+- name: "Wait for all postgres containers to become ready"
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=postgres" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: postgres_result
+  until: postgres_result.stdout.find("1") != -1
+  retries: 30
+  delay: 5
+
+- name: Wait for app-metrics health endpoint to report healthy
+  uri:
+    url: http://{{ app_metrics_route.route.spec.host }}/healthz
+    status_code: 200
+  register: app_metrics_health
+  until: app_metrics_health.status == 200
+  retries: 30
+  delay: 5
