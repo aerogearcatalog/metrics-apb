@@ -1,6 +1,6 @@
 - name: Postgresql PVC
   k8s_v1_persistent_volume_claim:
-    name: postgresql-data
+    name: "{{ postgres_claim_name}}"
     namespace: "{{ namespace }}"
     labels:
       app: aerogear-app-metrics
@@ -40,11 +40,11 @@
         value: aerogear_mobile_metrics
       volumeMounts:
         - mountPath: /var/lib/pgsql/data
-          name: postgresql-data
+          name: "{{ postgres_claim_name}}"
     volumes:
-      - name: postgresql-data
+      - name: "{{ postgres_claim_name}}"
         persistentVolumeClaim:
-          claimName: postgresql-data
+          claimName: "{{ postgres_claim_name}}"
 
 - name: Create db internal service
   k8s_v1_service:
