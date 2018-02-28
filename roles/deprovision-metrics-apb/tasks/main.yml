@@ -4,6 +4,12 @@
 - name: Delete all grafana resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
   shell: oc delete all -l app=grafana -n '{{ namespace }}'
 
+- name: Delete all aerogear-app-metrics resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
+  shell: oc delete all -l app=aerogear-app-metrics -n '{{ namespace }}'
+
+- name: Delete all postgres resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
+  shell: oc delete all -l app=postgres -n '{{ namespace }}'
+
 - k8s_v1_secret:
     name: '{{ prometheus_secret_name }}'
     namespace: '{{ namespace }}'
@@ -48,5 +54,11 @@
 - name: Grafana PVC
   k8s_v1_persistent_volume_claim:
     name: '{{ grafana_claim_name}}'
+    namespace: "{{ namespace }}"
+    state: absent
+
+- name: Postgres PVC
+  k8s_v1_persistent_volume_claim:
+    name: '{{ postgres_claim_name}}'
     namespace: "{{ namespace }}"
     state: absent
