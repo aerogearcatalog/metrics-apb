@@ -55,7 +55,7 @@ node ('apb-test') {
                     podSelector = openshift.selector("pod", "testing-pod")
                     
                     try {
-                        timeout(10) {
+                        timeout(15) {
                             podSelector.untilEach(1) {
                                 podPhase = it.object().status.phase
                                 println("Pod status:" + podPhase)
