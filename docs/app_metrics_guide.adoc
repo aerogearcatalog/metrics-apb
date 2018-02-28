@@ -1,0 +1,41 @@
+= Understanding & taking actions based on App Metrics
+
+This guide gives details on a number scenarios where App Metrics can be analysed to see if actions can or should be taken by the App developer.
+
+[discrete]
+== Prerequisites
+
+* A running Metrics setup i.e. a provision of the Metrics APB
+* An App that is using the Metrics SDK hooked up to the App Metrics server
+
+[discrete]
+== Visualising the number of App users
+
+TODO
+
+[discrete]
+== Visualising the number of App users by Platform
+
+TODO
+
+[discrete]
+== Visualising the number of App users by Platform Version
+
+TODO
+
+[discrete]
+== Visualising the number of App users by App Version
+
+TODO
+
+[discrete]
+== Visualising the number of App users by SDK Version
+
+TODO
+
+
+[discrete]
+== Additional Resources
+
+* Metrics SDK(s) (link TBD)
+* Metris Service (link TBD)
