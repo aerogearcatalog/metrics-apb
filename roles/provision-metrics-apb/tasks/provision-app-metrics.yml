@@ -79,6 +79,12 @@
     - name: aerogear-app-metrics
       image: '{{ api_server_image }}:{{ api_server_version }}'
       imagePullPolicy: IfNotPresent
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: 3000
+        initialDelaySeconds: 15
+        timeoutSeconds: 1
       env:
       - name: PGHOST
         value: postgres-internal
