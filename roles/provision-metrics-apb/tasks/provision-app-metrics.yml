@@ -82,7 +82,7 @@
       readinessProbe:
         httpGet:
           path: /healthz
-          port: 3000
+          port: "{{ api_server_port }}"
         initialDelaySeconds: 15
         timeoutSeconds: 1
       env:
