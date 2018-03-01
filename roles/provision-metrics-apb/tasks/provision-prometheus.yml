@@ -11,7 +11,7 @@
     name: '{{ prometheus_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     access_modes:
       - ReadWriteOnce
@@ -24,14 +24,14 @@
     name: prometheus
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     replicas: 1
     selector:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     spec_template_metadata_labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
@@ -75,10 +75,10 @@
     name: '{{ prometheus_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     selector:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     ports:
       - name: web
@@ -90,10 +90,10 @@
     name: '{{ prometheus_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     selector:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     ports:
       - name: web
@@ -105,7 +105,7 @@
     name: '{{ prometheus_route_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     to_name: prometheus
     spec_port_target_port: web

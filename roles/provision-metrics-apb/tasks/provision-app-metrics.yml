@@ -3,8 +3,8 @@
     name: "{{ postgres_claim_name}}"
     namespace: "{{ namespace }}"
     labels:
-      app: aerogear-app-metrics
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     access_modes:
       - ReadWriteMany
     resources_requests:
@@ -16,15 +16,15 @@
     name: postgres
     namespace: '{{ namespace }}'
     labels:
-      app: postgres
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     replicas: 1
     selector:
-      app: postgres
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     spec_template_metadata_labels:
-      app: postgres
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     containers:
     - name: postgresql
       image: "{{ postgres_image }}:{{ postgres_version }}"
@@ -51,11 +51,11 @@
     name: postgres-internal
     namespace: '{{ namespace }}'
     labels:
-      app: postgres
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     selector:
-      app: postgres
-      service: aerogear-app-metrics
+      app: aerogear-metrics
+      service: postgres
     ports:
       - name: postgres
         port: "{{ postgres_port }}"
@@ -66,14 +66,14 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     replicas: 1
     selector:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     spec_template_metadata_labels:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     containers:
     - name: aerogear-app-metrics
@@ -100,10 +100,10 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     selector:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     ports:
       - name: web
@@ -115,12 +115,12 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: aerogear-metrics
       service: aerogear-app-metrics
     to_name: aerogear-app-metrics
     spec_port_target_port: web
   register: app_metrics_route
-
+  
     
 # Check the containers in the aerogear-app-metrics pod and make sure they are all ready
 - name: "Wait for all aerogear-app-metrics containers to become ready"
