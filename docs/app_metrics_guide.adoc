@@ -1,6 +1,6 @@
-= Understanding & taking actions based on App Metrics
+= Analyzing App usage using the metrics service
 
-This guide gives details on a number scenarios where App Metrics can be analysed to see if actions can or should be taken by the App developer.
+This guide shows how to use app metrics to provide rich visualizations regarding app usage that can then drive decisions, such as 'when will we stop supporting version x.y of app?'
 
 [discrete]
 == Prerequisites
@@ -38,4 +38,4 @@ TODO
 == Additional Resources
 
 * Metrics SDK(s) (link TBD)
-* Metris Service (link TBD)
+* Metrics Service (link TBD)
