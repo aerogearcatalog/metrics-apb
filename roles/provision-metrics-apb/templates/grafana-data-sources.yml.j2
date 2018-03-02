@@ -11,3 +11,15 @@ datasources:
   version: 1
   editable: true
   json_data: {"timeInterval": "5s"}
+- name: Postgres
+  type: postgres
+  access: proxy
+  url: postgres-internal:5432
+  user: "{{ postgres_user }}"
+  secure_json_data:
+    password: {{ postgres_password }}
+  database: "{{ postgres_database }}"
+  version: 1
+  editable: true
+  json_data:
+    sslmode: "disable"
