@@ -37,7 +37,7 @@
       - name: POSTGRESQL_USER
         value: "{{ postgres_user }}"
       - name: POSTGRESQL_DATABASE
-        value: aerogear_mobile_metrics
+        value: "{{ postgres_database }}"
       volumeMounts:
         - mountPath: /var/lib/pgsql/data
           name: "{{ postgres_claim_name}}"
@@ -93,7 +93,7 @@
       - name: PGUSER
         value: "{{ postgres_user}}"
       - name: PGDATABASE
-        value: aerogear_mobile_metrics
+        value: "{{ postgres_database }}"
 
 - name: Create api server service
   k8s_v1_service:
