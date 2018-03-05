@@ -12,16 +12,13 @@
     state: present
 
 - name: create postgres deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: postgres
     namespace: '{{ namespace }}'
     labels:
       app: aerogear-metrics
       service: postgres
     replicas: 1
-    selector:
-      app: aerogear-metrics
-      service: postgres
     spec_template_metadata_labels:
       app: aerogear-metrics
       service: postgres
@@ -62,16 +59,13 @@
         target_port: "{{ postgres_port }}"
 
 - name: Create api server deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
       app: aerogear-metrics
       service: aerogear-app-metrics
     replicas: 1
-    selector:
-      app: aerogear-metrics
-      service: aerogear-app-metrics
     spec_template_metadata_labels:
       app: aerogear-metrics
       service: aerogear-app-metrics
@@ -124,7 +118,7 @@
     
 # Check the containers in the aerogear-app-metrics pod and make sure they are all ready
 - name: "Wait for all aerogear-app-metrics containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=aerogear-app-metrics" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=aerogear-app-metrics" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: aerogear_app_metrics_result
   until: aerogear_app_metrics_result.stdout.find("1") != -1
   retries: 30
@@ -132,7 +126,7 @@
 
   # Check the containers in the postgres pod and make sure they are all ready
 - name: "Wait for all postgres containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=postgres" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=postgres" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: postgres_result
   until: postgres_result.stdout.find("1") != -1
   retries: 30

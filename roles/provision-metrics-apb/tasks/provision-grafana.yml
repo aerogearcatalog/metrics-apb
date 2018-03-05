@@ -39,16 +39,13 @@
     state: present
 
 - name: create grafana deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: grafana
     namespace: '{{ namespace }}'
     labels:
       app: aerogear-metrics
       service: grafana
     replicas: 1
-    selector:
-      app: aerogear-metrics
-      service: grafana
     spec_template_metadata_labels:
       app: aerogear-metrics
       service: grafana
@@ -154,7 +151,7 @@
 
 # Check the containers in the grafana pod and make sure they are all ready
 - name: "Wait for all grafana containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: grafana_result
   until: grafana_result.stdout.find("2") != -1
   retries: 30

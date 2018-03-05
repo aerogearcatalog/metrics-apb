@@ -20,16 +20,13 @@
     state: present
 
 - name: create prometheus deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: prometheus
     namespace: '{{ namespace }}'
     labels:
       app: aerogear-metrics
       service: prometheus
     replicas: 1
-    selector:
-      app: aerogear-metrics
-      service: prometheus
     spec_template_metadata_labels:
       app: aerogear-metrics
       service: prometheus
@@ -122,7 +119,7 @@
 
 # Check the containers in the prometheus pod and make sure they are all ready
 - name: "Wait for all prometheus containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: prometheus_result
   until: prometheus_result.stdout.find("2") != -1
   retries: 30
