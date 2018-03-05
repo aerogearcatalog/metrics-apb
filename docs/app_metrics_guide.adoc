@@ -57,8 +57,7 @@ However, if you only have 1 App there is no difference between the number of uni
 Every metric event has the platform associated with it.
 An example of platform is Android or iOS.
 This can be useful for making decisions about which platform to put effort into.
-However, if you only have 1 App on 1 platform (e.g a single Android App), or you have multiple Apps all on the same platform (e.g. 2 Android Apps)
-there is no difference between the number of unique clients and the number of unique clients per platform.
+However, if all your Apps on on a single platform, there is no difference between the number of unique clients and the number of unique clients per platform.
 
 [discrete]
 == Analyzing unique clients per sdk version
