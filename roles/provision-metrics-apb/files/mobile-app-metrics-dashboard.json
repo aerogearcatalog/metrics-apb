@@ -1,0 +1,1053 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": false,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 14,
+  "links": [
+    {
+      "icon": "external link",
+      "keepTime": true,
+      "tags": [
+        "mobile-services"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "content": "# Mobile app metrics\nThis dashboard shows metrics per app. \nSelect the app using the \"App\" dropdown above.",
+      "gridPos": {
+        "h": 4,
+        "w": 14,
+        "x": 0,
+        "y": 1
+      },
+      "id": 4,
+      "links": [],
+      "mode": "markdown",
+      "title": "Panel Title",
+      "type": "text"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Postgres",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 14,
+        "y": 1
+      },
+      "id": 6,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "count",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  count(distinct latestEntryInTimeRange.clientId)\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, data->'app'->>'id' as appId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId, appId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.data->'app'->>'id' = latestEntry.appId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'id';",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Unique clients",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Postgres",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 1
+      },
+      "id": 7,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "count",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  count(*)\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform;",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "App launch count",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Postgres",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 5
+      },
+      "id": 11,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text as platform\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platform, time;",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'All Platforms' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n  GROUP BY time;",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "App launch count per platform",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 5
+      },
+      "id": 22,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'device'->>'platform')::text as platform\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'device' ? 'platform'\n  GROUP by platform;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per platform",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Postgres",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 14
+      },
+      "id": 17,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platformVersion, time;",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "App launch count per platform version",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 14
+      },
+      "id": 23,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by platformVersion;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per platform version",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 13,
+      "panels": [],
+      "repeat": "appMetricName",
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "sdkVersion",
+          "value": "sdkVersion"
+        }
+      },
+      "title": "Metrics per $appMetricName [platform: $platform]",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Postgres",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 24
+      },
+      "id": 15,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "repeatDirection": "h",
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "sdkVersion",
+          "value": "sdkVersion"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "App launch count per $appMetricName",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 24
+      },
+      "id": 28,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "repeat": null,
+      "repeatDirection": "h",
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "sdkVersion",
+          "value": "sdkVersion"
+        }
+      },
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per $appMetricName",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 29,
+      "panels": [],
+      "repeat": null,
+      "repeatIteration": 1520252087446,
+      "repeatPanelId": 13,
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "appVersion",
+          "value": "appVersion"
+        }
+      },
+      "title": "Metrics per $appMetricName [platform: $platform]",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Postgres",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 34
+      },
+      "id": 30,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "repeatDirection": "h",
+      "repeatIteration": 1520252087446,
+      "repeatPanelId": 15,
+      "repeatedByRow": true,
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "appVersion",
+          "value": "appVersion"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "App launch count per $appMetricName",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 34
+      },
+      "id": 31,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "repeat": null,
+      "repeatDirection": "h",
+      "repeatIteration": 1520252087446,
+      "repeatPanelId": 28,
+      "repeatedByRow": true,
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "appVersion",
+          "value": "appVersion"
+        }
+      },
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per $appMetricName",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 16,
+  "style": "dark",
+  "tags": [
+    "mobile-app-metrics"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": "'%'",
+        "current": {
+          "selected": true,
+          "text": "com.example.anotherApp",
+          "value": "com.example.anotherApp"
+        },
+        "datasource": "Postgres",
+        "hide": 0,
+        "includeAll": true,
+        "label": "App",
+        "multi": false,
+        "name": "appId",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "com.example.anotherApp",
+            "value": "com.example.anotherApp"
+          },
+          {
+            "selected": false,
+            "text": "com.example.someApp",
+            "value": "com.example.someApp"
+          },
+          {
+            "selected": false,
+            "text": "com.example.someOtherApp",
+            "value": "com.example.someOtherApp"
+          }
+        ],
+        "query": "select distinct data->'app'->>'id' from mobileappmetrics;",
+        "refresh": 0,
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "'%'",
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": "android",
+          "value": "android"
+        },
+        "datasource": "Postgres",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Platform",
+        "multi": false,
+        "name": "platform",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "android",
+            "value": "android"
+          },
+          {
+            "selected": false,
+            "text": "ios",
+            "value": "ios"
+          }
+        ],
+        "query": "select distinct data->'device'->>'platform' from mobileappmetrics;",
+        "refresh": 0,
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "auto": true,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "text": "auto",
+          "value": "$__auto_interval_resolutionInterval"
+        },
+        "hide": 0,
+        "label": "Resolution",
+        "name": "resolutionInterval",
+        "options": [
+          {
+            "selected": true,
+            "text": "auto",
+            "value": "$__auto_interval_resolutionInterval"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "12h",
+            "value": "12h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "14d",
+            "value": "14d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ],
+        "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "refresh": 2,
+        "type": "interval"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "App Metric",
+        "multi": true,
+        "name": "appMetricName",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "sdkVersion",
+            "value": "sdkVersion"
+          },
+          {
+            "selected": false,
+            "text": "appVersion",
+            "value": "appVersion"
+          }
+        ],
+        "query": "sdkVersion, appVersion",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now/d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "Mobile app metrics",
+  "version": 1
+}
