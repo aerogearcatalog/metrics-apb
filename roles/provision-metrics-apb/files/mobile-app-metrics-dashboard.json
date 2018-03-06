@@ -831,8 +831,8 @@
         "current": {
           "selected": true,
           "tags": [],
-          "text": "com.example.anotherApp",
-          "value": "com.example.anotherApp"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": "Postgres",
         "hide": 0,
@@ -842,24 +842,9 @@
         "name": "appId",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "All",
             "value": "$__all"
-          },
-          {
-            "selected": true,
-            "text": "com.example.anotherApp",
-            "value": "com.example.anotherApp"
-          },
-          {
-            "selected": false,
-            "text": "com.example.someApp",
-            "value": "com.example.someApp"
-          },
-          {
-            "selected": false,
-            "text": "com.example.someOtherApp",
-            "value": "com.example.someOtherApp"
           }
         ],
         "query": "select distinct data->'app'->>'id' from mobileappmetrics;",
@@ -877,8 +862,8 @@
         "current": {
           "selected": true,
           "tags": [],
-          "text": "android",
-          "value": "android"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": "Postgres",
         "hide": 0,
@@ -888,19 +873,9 @@
         "name": "platform",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "All",
             "value": "$__all"
-          },
-          {
-            "selected": true,
-            "text": "android",
-            "value": "android"
-          },
-          {
-            "selected": false,
-            "text": "ios",
-            "value": "ios"
           }
         ],
         "query": "select distinct data->'device'->>'platform' from mobileappmetrics;",
