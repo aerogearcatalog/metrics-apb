@@ -222,6 +222,46 @@
     },
     {
       "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 5
+      },
+      "id": 22,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'device'->>'platform')::text as platform\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'device' ? 'platform'\n  GROUP by platform;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per platform",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
@@ -230,7 +270,7 @@
       "gridPos": {
         "h": 9,
         "w": 16,
-        "x": 0,
+        "x": 8,
         "y": 5
       },
       "id": 11,
@@ -320,10 +360,10 @@
       "gridPos": {
         "h": 9,
         "w": 8,
-        "x": 16,
-        "y": 5
+        "x": 0,
+        "y": 14
       },
-      "id": 22,
+      "id": 23,
       "interval": null,
       "legend": {
         "show": true,
@@ -338,12 +378,15 @@
       "targets": [
         {
           "alias": "",
+          "expr": "",
           "format": "time_series",
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'device'->>'platform')::text as platform\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'device' ? 'platform'\n  GROUP by platform;",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by platformVersion;",
           "refId": "A"
         }
       ],
-      "title": "Unique clients per platform",
+      "title": "Unique clients per platform version",
       "type": "grafana-piechart-panel",
       "valueName": "current"
     },
@@ -357,7 +400,7 @@
       "gridPos": {
         "h": 9,
         "w": 16,
-        "x": 0,
+        "x": 8,
         "y": 14
       },
       "id": 17,
@@ -429,49 +472,6 @@
       ]
     },
     {
-      "aliasColors": {},
-      "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
-      },
-      "datasource": "Postgres",
-      "fontSize": "80%",
-      "format": "short",
-      "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 16,
-        "y": 14
-      },
-      "id": 23,
-      "interval": null,
-      "legend": {
-        "show": true,
-        "values": true
-      },
-      "legendType": "Under graph",
-      "links": [],
-      "maxDataPoints": 3,
-      "nullPointMode": "connected",
-      "pieType": "pie",
-      "strokeWidth": 1,
-      "targets": [
-        {
-          "alias": "",
-          "expr": "",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by platformVersion;",
-          "refId": "A"
-        }
-      ],
-      "title": "Unique clients per platform version",
-      "type": "grafana-piechart-panel",
-      "valueName": "current"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -494,6 +494,57 @@
     },
     {
       "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 24
+      },
+      "id": 28,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "repeat": null,
+      "repeatDirection": "h",
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "sdkVersion",
+          "value": "sdkVersion"
+        }
+      },
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique clients per $appMetricName",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
@@ -502,7 +553,7 @@
       "gridPos": {
         "h": 9,
         "w": 16,
-        "x": 0,
+        "x": 8,
         "y": 24
       },
       "id": 15,
@@ -590,6 +641,29 @@
       ]
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 29,
+      "panels": [],
+      "repeat": null,
+      "repeatIteration": 1520252724892,
+      "repeatPanelId": 13,
+      "scopedVars": {
+        "appMetricName": {
+          "selected": false,
+          "text": "appVersion",
+          "value": "appVersion"
+        }
+      },
+      "title": "Metrics per $appMetricName [platform: $platform]",
+      "type": "row"
+    },
+    {
       "aliasColors": {},
       "cacheTimeout": null,
       "combine": {
@@ -602,10 +676,10 @@
       "gridPos": {
         "h": 9,
         "w": 8,
-        "x": 16,
-        "y": 24
+        "x": 0,
+        "y": 34
       },
-      "id": 28,
+      "id": 30,
       "interval": null,
       "legend": {
         "show": true,
@@ -618,11 +692,14 @@
       "pieType": "pie",
       "repeat": null,
       "repeatDirection": "h",
+      "repeatIteration": 1520252724892,
+      "repeatPanelId": 28,
+      "repeatedByRow": true,
       "scopedVars": {
         "appMetricName": {
           "selected": false,
-          "text": "sdkVersion",
-          "value": "sdkVersion"
+          "text": "appVersion",
+          "value": "appVersion"
         }
       },
       "strokeWidth": 1,
@@ -641,29 +718,6 @@
       "valueName": "current"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 33
-      },
-      "id": 29,
-      "panels": [],
-      "repeat": null,
-      "repeatIteration": 1520252087446,
-      "repeatPanelId": 13,
-      "scopedVars": {
-        "appMetricName": {
-          "selected": false,
-          "text": "appVersion",
-          "value": "appVersion"
-        }
-      },
-      "title": "Metrics per $appMetricName [platform: $platform]",
-      "type": "row"
-    },
-    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -673,10 +727,10 @@
       "gridPos": {
         "h": 9,
         "w": 16,
-        "x": 0,
+        "x": 8,
         "y": 34
       },
-      "id": 30,
+      "id": 31,
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -697,7 +751,7 @@
       "renderer": "flot",
       "repeat": null,
       "repeatDirection": "h",
-      "repeatIteration": 1520252087446,
+      "repeatIteration": 1520252724892,
       "repeatPanelId": 15,
       "repeatedByRow": true,
       "scopedVars": {
@@ -762,60 +816,6 @@
           "show": true
         }
       ]
-    },
-    {
-      "aliasColors": {},
-      "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
-      },
-      "datasource": "Postgres",
-      "fontSize": "80%",
-      "format": "short",
-      "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 16,
-        "y": 34
-      },
-      "id": 31,
-      "interval": null,
-      "legend": {
-        "show": true,
-        "values": true
-      },
-      "legendType": "Under graph",
-      "links": [],
-      "maxDataPoints": 3,
-      "nullPointMode": "connected",
-      "pieType": "pie",
-      "repeat": null,
-      "repeatDirection": "h",
-      "repeatIteration": 1520252087446,
-      "repeatPanelId": 28,
-      "repeatedByRow": true,
-      "scopedVars": {
-        "appMetricName": {
-          "selected": false,
-          "text": "appVersion",
-          "value": "appVersion"
-        }
-      },
-      "strokeWidth": 1,
-      "targets": [
-        {
-          "alias": "",
-          "expr": "",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
-          "refId": "A"
-        }
-      ],
-      "title": "Unique clients per $appMetricName",
-      "type": "grafana-piechart-panel",
-      "valueName": "current"
     }
   ],
   "refresh": false,
@@ -830,6 +830,7 @@
         "allValue": "'%'",
         "current": {
           "selected": true,
+          "tags": [],
           "text": "com.example.anotherApp",
           "value": "com.example.anotherApp"
         },
