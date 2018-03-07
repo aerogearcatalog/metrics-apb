@@ -827,27 +827,14 @@
     "list": [
       {
         "allValue": "'%'",
-        "current": {
-          "selected": true,
-          "tags": [],
-          "text": "All",
-          "value": "$__all"
-        },
         "datasource": "Postgres",
         "hide": 0,
         "includeAll": true,
         "label": "App",
         "multi": false,
         "name": "appId",
-        "options": [
-          {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          }
-        ],
         "query": "select distinct data->'app'->>'appId' from mobileappmetrics;",
-        "refresh": 0,
+        "refresh": 2,
         "regex": "",
         "sort": 1,
         "tagValuesQuery": "",
@@ -858,27 +845,14 @@
       },
       {
         "allValue": "'%'",
-        "current": {
-          "selected": true,
-          "tags": [],
-          "text": "All",
-          "value": "$__all"
-        },
         "datasource": "Postgres",
         "hide": 0,
         "includeAll": true,
         "label": "Platform",
         "multi": false,
         "name": "platform",
-        "options": [
-          {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          }
-        ],
         "query": "select distinct data->'device'->>'platform' from mobileappmetrics;",
-        "refresh": 0,
+        "refresh": 2,
         "regex": "",
         "sort": 1,
         "tagValuesQuery": "",
