@@ -1,14 +1,54 @@
-- name: Delete all prometheus resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
-  shell: oc delete all -l app=prometheus -n '{{ namespace }}'
+- name: Scaling down grafana deployment
+  k8s_extensions_v1beta1_deployment:
+    name: grafana
+    namespace: '{{ namespace }}'
+    replicas: 0
+    state: present
 
-- name: Delete all grafana resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
-  shell: oc delete all -l app=grafana -n '{{ namespace }}'
+- name: Removing grafana deployment
+    k8s_extensions_v1beta1_deployment:
+      name: grafana
+      namespace: '{{ namespace }}'
+      state: absent
 
-- name: Delete all aerogear-app-metrics resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
-  shell: oc delete all -l app=aerogear-app-metrics -n '{{ namespace }}'
+- name: Scaling down prometheus deployment
+  k8s_extensions_v1beta1_deployment:
+    name: prometheus
+    namespace: '{{ namespace }}'
+    replicas: 0
+    state: present
 
-- name: Delete all postgres resources by app label (limited to buildconfig,deploymentconfig,service,imagestream,route and pod)
-  shell: oc delete all -l app=postgres -n '{{ namespace }}'
+- name: Removing prometheus deployment
+    k8s_extensions_v1beta1_deployment:
+      name: prometheus
+      namespace: '{{ namespace }}'
+      state: absent
+
+- name: Scaling down aerogear-app-metrics deployment
+  k8s_extensions_v1beta1_deployment:
+    name: aerogear-app-metrics
+    namespace: '{{ namespace }}'
+    replicas: 0
+    state: present
+
+- name: Removing aerogear-app-metrics deployment
+    k8s_extensions_v1beta1_deployment:
+      name: aerogear-app-metrics
+      namespace: '{{ namespace }}'
+      state: absent
+
+- name: Scaling down postgres deployment
+  k8s_extensions_v1beta1_deployment:
+    name: postgres
+    namespace: '{{ namespace }}'
+    replicas: 0
+    state: present
+
+- name: Removing postgres deployment
+    k8s_extensions_v1beta1_deployment:
+      name: postgres
+      namespace: '{{ namespace }}'
+      state: absent
 
 - k8s_v1_secret:
     name: '{{ prometheus_secret_name }}'
