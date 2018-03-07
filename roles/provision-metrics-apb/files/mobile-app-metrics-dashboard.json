@@ -15,7 +15,6 @@
   "editable": false,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 14,
   "links": [
     {
       "icon": "external link",
@@ -120,7 +119,7 @@
           "format": "table",
           "hide": false,
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  count(distinct latestEntryInTimeRange.clientId)\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, data->'app'->>'id' as appId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId, appId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.data->'app'->>'id' = latestEntry.appId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'id';",
+          "rawSql": "SELECT\n  count(distinct latestEntryInTimeRange.clientId)\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, data->'app'->>'appId' as appId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId, appId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.data->'app'->>'appId' = latestEntry.appId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'appId';",
           "refId": "A"
         }
       ],
@@ -203,7 +202,7 @@
           "format": "table",
           "hide": false,
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  count(*)\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform;",
+          "rawSql": "SELECT\n  count(*)\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform;",
           "refId": "A"
         }
       ],
@@ -301,13 +300,13 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text as platform\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platform, time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text as platform\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platform, time;",
           "refId": "A"
         },
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'All Platforms' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n  GROUP BY time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'All Platforms' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform'\n  GROUP BY time;",
           "refId": "B"
         }
       ],
@@ -382,7 +381,7 @@
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by platformVersion;",
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by platformVersion;",
           "refId": "A"
         }
       ],
@@ -431,7 +430,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platformVersion, time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'device'->>'platform')::text || ' ' || (data->'device'->>'platformVersion')::text as platformVersion\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY platformVersion, time;",
           "refId": "A"
         }
       ],
@@ -535,7 +534,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
           "refId": "A"
         }
       ],
@@ -594,13 +593,13 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
           "refId": "A"
         },
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
           "refId": "B"
         }
       ],
@@ -709,7 +708,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'id' and data->'app'->>'id' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
+          "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>$appMetricName)::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n            and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  GROUP by metric;",
           "refId": "A"
         }
       ],
@@ -771,13 +770,13 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  (data->'app'->>$appMetricName)::text as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? $appMetricName\n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY metric, time;",
           "refId": "A"
         },
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'id' and data->'app'->>'id' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
+          "rawSql": "SELECT\n  $__timeGroup(event_time,$resolutionInterval),\n  count(*),\n  'Total' as metric\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    and data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    and data->'device' ? 'platform'\n    and data->'app' ? $appMetricName\n    and data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  GROUP BY time;",
           "refId": "B"
         }
       ],
@@ -847,7 +846,7 @@
             "value": "$__all"
           }
         ],
-        "query": "select distinct data->'app'->>'id' from mobileappmetrics;",
+        "query": "select distinct data->'app'->>'appId' from mobileappmetrics;",
         "refresh": 0,
         "regex": "",
         "sort": 1,
