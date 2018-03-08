@@ -772,7 +772,15 @@
             "y": 3
           },
           "id": 27,
-          "links": [],
+          "links": [
+            {
+              "dashUri": "db/mobile-app-metrics",
+              "dashboard": "Mobile app metrics",
+              "keepTime": true,
+              "title": "Mobile app metrics main dashboard",
+              "type": "dashboard"
+            }
+          ],
           "mode": "markdown",
           "title": "",
           "transparent": false,
