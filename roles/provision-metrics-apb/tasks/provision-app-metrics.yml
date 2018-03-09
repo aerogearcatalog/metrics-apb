@@ -13,7 +13,7 @@
 
 - name: create postgres deployment config
   openshift_v1_deployment_config:
-    name: postgres
+    name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: postgres
@@ -48,7 +48,7 @@
 
 - name: Create db internal service
   k8s_v1_service:
-    name: postgres-internal
+    name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: postgres
@@ -87,7 +87,7 @@
         timeoutSeconds: 1
       env:
       - name: PGHOST
-        value: postgres-internal
+        value: '{{ postgres_service_name }}'
       - name: PGPASSWORD
         value: "{{ postgres_password}}"
       - name: PGUSER
