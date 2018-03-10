@@ -11,7 +11,7 @@
     name: '{{ prometheus_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     access_modes:
       - ReadWriteOnce
@@ -20,18 +20,15 @@
     state: present
 
 - name: create prometheus deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: prometheus
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     replicas: 1
-    selector:
-      app: prometheus
-      service: prometheus
     spec_template_metadata_labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
@@ -75,10 +72,10 @@
     name: '{{ prometheus_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     selector:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     ports:
       - name: web
@@ -90,10 +87,10 @@
     name: '{{ prometheus_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     selector:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     ports:
       - name: web
@@ -105,7 +102,7 @@
     name: '{{ prometheus_route_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: aerogear-metrics
       service: prometheus
     to_name: prometheus
     spec_port_target_port: web
@@ -122,7 +119,7 @@
 
 # Check the containers in the prometheus pod and make sure they are all ready
 - name: "Wait for all prometheus containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=prometheus" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: prometheus_result
   until: prometheus_result.stdout.find("2") != -1
   retries: 30

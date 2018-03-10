@@ -31,8 +31,8 @@
     name: '{{ grafana_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     access_modes:
       - ReadWriteMany
     resources_requests:
@@ -40,19 +40,16 @@
     state: present
 
 - name: create grafana deployment config
-  openshift_v1_deployment_config:
+  k8s_extensions_v1beta1_deployment:
     name: grafana
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     replicas: 1
-    selector:
-      app: grafana
-      service: prometheus
     spec_template_metadata_labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
     - name: grafana-oauth-proxy
@@ -116,11 +113,11 @@
     name: '{{ grafana_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     selector:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     ports:
       - name: web
         port: 443
@@ -131,11 +128,11 @@
     name: '{{ grafana_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     selector:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     ports:
       - name: web
         port: 80
@@ -146,8 +143,8 @@
     name: '{{ grafana_route_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
-      service: prometheus
+      app: aerogear-metrics
+      service: grafana
     to_name: grafana
     spec_port_target_port: web
     spec_tls_termination: edge
@@ -155,7 +152,7 @@
 
 # Check the containers in the grafana pod and make sure they are all ready
 - name: "Wait for all grafana containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="service=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: grafana_result
   until: grafana_result.stdout.find("2") != -1
   retries: 30
