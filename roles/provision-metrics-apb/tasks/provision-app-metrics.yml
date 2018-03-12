@@ -13,7 +13,7 @@
 
 - name: create postgres deployment config
   openshift_v1_deployment_config:
-    name: postgres
+    name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: postgres
@@ -48,7 +48,7 @@
 
 - name: Create db internal service
   k8s_v1_service:
-    name: postgres-internal
+    name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
       app: postgres
@@ -87,7 +87,7 @@
         timeoutSeconds: 1
       env:
       - name: PGHOST
-        value: postgres-internal
+        value: '{{ postgres_service_name }}'
       - name: PGPASSWORD
         value: "{{ postgres_password}}"
       - name: PGUSER
@@ -132,7 +132,7 @@
 
   # Check the containers in the postgres pod and make sure they are all ready
 - name: "Wait for all postgres containers to become ready"
-  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=postgres" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig={{ postgres_service_name }}" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
   register: postgres_result
   until: postgres_result.stdout.find("1") != -1
   retries: 30

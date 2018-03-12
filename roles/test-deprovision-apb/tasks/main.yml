@@ -42,6 +42,7 @@
     - '{{ grafana_internal_service_name}}'
     - '{{ prometheus_service_name}}'
     - '{{ prometheus_internal_service_name}}'
+    - '{{ postgres_service_name}}'
 
 - name: Check that all secrets have been removed
   shell: oc get secret --namespace={{ namespace }} {{ prometheus_secret_name }} 2>&1

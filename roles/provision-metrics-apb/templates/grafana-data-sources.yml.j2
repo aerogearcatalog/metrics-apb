@@ -14,7 +14,7 @@ datasources:
 - name: Postgres
   type: postgres
   access: proxy
-  url: postgres-internal:5432
+  url: {{ postgres_service_name }}:5432
   user: "{{ postgres_user }}"
   secure_json_data:
     password: {{ postgres_password }}
