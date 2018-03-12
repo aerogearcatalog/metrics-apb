@@ -40,6 +40,11 @@
     namespace: '{{ namespace }}'
     state: absent
 
+- k8s_v1_config_map:
+    name: metrics
+    namespace: '{{ namespace }}'
+    state: absent
+
 - k8s_v1_service_account:
     name: '{{ proxy_serviceaccount_name }}'
     namespace: '{{ namespace }}'
