@@ -66,6 +66,7 @@
     - '{{ grafana_datasources_configmap_name }}'
     - '{{ grafana_dashboards_configmap_name }}'
     - '{{ prometheus_configmap_name }}'
+    - metrics
 
 - name: Check that all persistent volume claims have been removed
   shell: oc get pvc --namespace={{ namespace }} {{ item }} 2>&1

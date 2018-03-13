@@ -110,7 +110,7 @@
         port: 443
         target_port: '{{ api_server_port }}'
 
-- name: Create api server route
+- name: Create api server https route
   openshift_v1_route:
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
@@ -119,9 +119,22 @@
       service: aerogear-app-metrics
     to_name: aerogear-app-metrics
     spec_port_target_port: web
+    tls_termination: edge
+    tls_insecure_edge_termination_policy: Redirect
   register: app_metrics_route
 
-    
+# Create the configmap used for the client config
+- name: Create metrics configmap template
+  template:
+    src: configmap.yml.j2
+    dest: /tmp/configmap.yaml
+
+- name: Create metrics public client config map
+  shell: oc create -f /tmp/configmap.yaml -n {{ namespace }}
+
+- name: delete configmap template file
+  file: path=/tmp/configmap.yaml state=absent
+
 # Check the containers in the aerogear-app-metrics pod and make sure they are all ready
 - name: "Wait for all aerogear-app-metrics containers to become ready"
   shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=aerogear-app-metrics" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
@@ -140,7 +153,8 @@
 
 - name: Wait for app-metrics health endpoint to report healthy
   uri:
-    url: http://{{ app_metrics_route.route.spec.host }}/healthz
+    url: https://{{ app_metrics_route.route.spec.host }}/healthz
+    validate_certs: no
     status_code: 200
   register: app_metrics_health
   until: app_metrics_health.status == 200
