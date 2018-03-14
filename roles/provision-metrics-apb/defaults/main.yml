@@ -20,8 +20,8 @@ api_server_port: 3000
 postgres_image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
 postgres_version: "latest"
 postgres_port: 5432
-postgres_user: "{{ lookup('env','POSTGRES_USER') | default('user', true) }}"
-postgres_password: "{{ lookup('password', '/tmp/pass chars=ascii_letters,digits') }}"
+postgres_user: "{{ POSTGRES_USER | default('user', true) }}"
+postgres_password: "{{ POSTGRES_PASSWORD | default(lookup('password', '/tmp/pass chars=ascii_letters,digits'), true) }}"
 postgres_database: "aerogear_mobile_metrics"
 
 # OAuth Proxy values

@@ -1,6 +1,6 @@
 version: 1.0
 name: metrics-apb
-description: Installs a metrics service based on Prometheus and Grafana
+description: UPDATE Installs a metrics service based on Prometheus and Grafana
 bindable: False
 async: optional
 tags:
@@ -33,13 +33,13 @@ plans:
         type: number
         title: Postgres Storage Size (Gb)
       - name: POSTGRES_USER
-        description: Username that will be used to connect to postgres
+        description: Username that will be used to connect to postgres ('user' will be used if blank)
         default: user
         type: string
         required: False
         title: Postgres User
       - name: POSTGRES_PASSWORD
-        description: Password to connect to Postgres ( generated if blank )
+        description: Password to connect to Postgres (generated if blank)
         type: string
         required: False
         title: Postgres Password
