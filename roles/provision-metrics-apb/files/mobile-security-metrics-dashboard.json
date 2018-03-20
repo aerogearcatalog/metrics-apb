@@ -39,6 +39,12 @@
       "id": "singlestat",
       "name": "Singlestat",
       "version": "5.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": "5.0.0"
     }
   ],
   "annotations": {
@@ -58,19 +64,48 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1521482861421,
+  "iteration": 1521556548447,
   "links": [],
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "content": "# Mobile Security Metrics\n\nThis dashboard shows Self-Defence Security Check results per platform. Select the platform and application using the dropdowns above.",
+      "gridPos": {
+        "h": 4,
+        "w": 14,
+        "x": 0,
+        "y": 1
+      },
+      "id": 22,
+      "links": [],
+      "mode": "markdown",
+      "title": "Introduction",
+      "transparent": false,
+      "type": "text"
+    },
+    {
       "cacheTimeout": null,
-      "colorBackground": true,
-      "colorValue": false,
+      "colorBackground": false,
+      "colorValue": true,
       "colors": [
-        "#299c46",
+        "#d44a3a",
         "rgba(237, 129, 40, 0.89)",
-        "#bf1b00"
+        "#299c46"
       ],
       "datasource": "${DS_POSTGRES}",
+      "decimals": 2,
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -80,12 +115,12 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 0
+        "h": 4,
+        "w": 5,
+        "x": 14,
+        "y": 1
       },
-      "id": 6,
+      "id": 30,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -124,12 +159,12 @@
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "select now() as time, perc_passed\nfrom (SELECT event_time as time,\n(select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec)/\n  (select sum(case when (sec->>'passed')::boolean then 0 else 1 end)\n  from jsonb_array_elements(data->'security') as sec) as perc_passed\nFROM mobileAppMetrics as s\nINNER JOIN (\n  SELECT DISTINCT clientId,\n  data->'app'->>'appId' as app,\n  data->'device'->>'platform'  as platform\n  FROM mobileAppMetrics\n  WHERE data->'app'->>'appId' like $appId\n  AND data->'device'->>'platform' like $platform\n) as a ON (s.clientId = a.clientId)\nWHERE $__timeFilter(event_time)\n) as failed_checks",
+          "rawSql": "SELECT now() as time, sum(passed)/sum(total) * 100 as perc_passed from (\n  SELECT (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(s.data->'security') as sec) as passed,\n  jsonb_array_length(s.data->'security') as total\n  FROM mobileAppMetrics as s\n  INNER JOIN (\n    SELECT DISTINCT a.clientId\n    FROM mobileAppMetrics as a\n    WHERE a.data->'app'->>'appId' like $appId\n    AND a.data->'device'->>'platform' like $platform\n  ) as apps ON (s.clientId = apps.clientId)\n  group by s.data, s.event_time\n  HAVING $__timeFilter(s.event_time)\n) as totals\n",
           "refId": "A"
         }
       ],
-      "thresholds": "500,1000",
-      "title": "Failed Checks",
+      "thresholds": "50,75",
+      "title": "Passed check % [Platform: $platform]",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -139,6 +174,131 @@
           "value": "null"
         }
       ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "${DS_POSTGRES}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 1
+      },
+      "id": 32,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT now() as time, sum(check_count) as value\nFROM (\n    SELECT jsonb_array_length(s.data->'security') as check_count\n    FROM mobileAppMetrics as s\n    INNER JOIN (\n      SELECT DISTINCT a.clientId\n      FROM mobileAppMetrics as a\n      WHERE a.data->'app'->>'appId' like $appId\n      AND a.data->'device'->>'platform' like $platform\n    ) as apps ON (s.clientId = apps.clientId)\n    group by s.data, s.event_time\n    HAVING $__timeFilter(s.event_time)\n  ) AS check_totals",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Security Check Count",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "${DS_POSTGRES}",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "show": true,
+        "sort": null,
+        "sortDesc": null,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "select now() as time, sum(passed) as passed, sum(not_passed) as not_passed\nfrom (SELECT event_time as time,\n  (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec) as passed,\n  (select sum(case when (sec->>'passed')::boolean then 0 else 1 end)\n  from jsonb_array_elements(data->'security') as sec) as not_passed\nFROM mobileAppMetrics as s\nINNER JOIN (\n  SELECT DISTINCT clientId,\n  data->'app'->>'appId' as app,\n  data->'device'->>'platform'  as platform\n  FROM mobileAppMetrics\n) as a ON (s.clientId = a.clientId)\n  where app like $appId\n  and platform like $platform\n) as check_counts\nWHERE $__timeFilter(time)",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "title": "Totals",
+      "type": "grafana-piechart-panel",
       "valueName": "current"
     },
     {
@@ -152,18 +312,21 @@
       "fontSize": "80%",
       "format": "short",
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 9
+        "x": 12,
+        "y": 5
       },
-      "id": 4,
+      "id": 33,
       "interval": null,
       "legend": {
+        "percentage": true,
         "show": true,
+        "sort": null,
+        "sortDesc": null,
         "values": true
       },
-      "legendType": "Under graph",
+      "legendType": "Right side",
       "links": [],
       "maxDataPoints": 3,
       "nullPointMode": "connected",
@@ -173,14 +336,28 @@
         {
           "alias": "",
           "format": "time_series",
+          "hide": false,
           "rawSql": "select now() as time, sum(passed) as passed, sum(not_passed) as not_passed\nfrom (SELECT event_time as time,\n  (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec) as passed,\n  (select sum(case when (sec->>'passed')::boolean then 0 else 1 end)\n  from jsonb_array_elements(data->'security') as sec) as not_passed\nFROM mobileAppMetrics as s\nINNER JOIN (\n  SELECT DISTINCT clientId,\n  data->'app'->>'appId' as app,\n  data->'device'->>'platform'  as platform\n  FROM mobileAppMetrics\n) as a ON (s.clientId = a.clientId)\n  where app like $appId\n  and platform like $platform\n) as check_counts\nWHERE $__timeFilter(time)",
           "refId": "A"
         }
       ],
       "timeFrom": null,
-      "title": "Passed Security Checks",
+      "title": "Passed Totals",
       "type": "grafana-piechart-panel",
       "valueName": "current"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 26,
+      "panels": [],
+      "title": "Details",
+      "type": "row"
     },
     {
       "aliasColors": {},
@@ -190,12 +367,12 @@
       "datasource": "${DS_POSTGRES}",
       "fill": 0,
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 14
       },
-      "id": 2,
+      "id": 16,
       "legend": {
         "avg": false,
         "current": false,
@@ -214,7 +391,9 @@
       "points": false,
       "renderer": "flot",
       "repeat": "platform",
-      "repeatDirection": "h",
+      "repeatDirection": "v",
+      "repeatIteration": 1521550974275,
+      "repeatPanelId": 2,
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": true,
@@ -230,7 +409,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Passed Checks",
+      "title": "Checks [Platform: $platform]",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -309,12 +488,32 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "allValue": "'%'",
+        "current": {},
+        "datasource": "${DS_POSTGRES}",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Check Name",
+        "multi": false,
+        "name": "name",
+        "options": [],
+        "query": "select distinct jsonb_array_elements(data->'security')->>'name' from mobileAppMetrics",
+        "refresh": 1,
+        "regex": "",
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
   "time": {
-    "from": "now-4h",
-    "to": "now-3h"
+    "from": "now-3h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -344,5 +543,5 @@
   "timezone": "",
   "title": "Mobile Security Metrics",
   "uid": "CiUi6kkiz",
-  "version": 3
+  "version": 14
 }
