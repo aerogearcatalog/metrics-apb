@@ -64,7 +64,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1521556548452,
+  "iteration": 1521562297535,
   "links": [],
   "panels": [
     {
@@ -410,7 +410,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_POSTGRES}",
-      "fill": 0,
+      "fill": 5,
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -442,12 +442,12 @@
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": true,
-      "steppedLine": false,
+      "steppedLine": true,
       "targets": [
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "SELECT event_time as time,\n  (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec) as passed,\n  (select sum(case when (sec->>'passed')::boolean then 0 else 1 end)\n  from jsonb_array_elements(data->'security') as sec) as not_passed\nFROM mobileAppMetrics as s\nINNER JOIN (\n  SELECT DISTINCT clientId,\n  data->'app'->>'appId' as app,\n  data->'device'->>'platform'  as platform\n  FROM mobileAppMetrics\n  WHERE data->'app'->>'appId' like $appId\n  AND data->'device'->>'platform' like $platform\n) as a ON (s.clientId = a.clientId)\nWHERE $__timeFilter(event_time)",
+          "rawSql": "SELECT event_time as time,\n  (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec) as passed,\n  (select sum(case when (sec->>'passed')::boolean then 0 else 1 end)\n  from jsonb_array_elements(data->'security') as sec) as not_passed\nFROM mobileAppMetrics as s\nINNER JOIN (\n  SELECT DISTINCT clientId\n  FROM mobileAppMetrics\n  WHERE data->'app'->>'appId' like $appId\n  AND data->'device'->>'platform' like $platform\n) as a ON (s.clientId = a.clientId)\nWHERE $__timeFilter(event_time)",
           "refId": "A"
         }
       ],
@@ -483,7 +483,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ]
     }
@@ -537,8 +537,8 @@
     ]
   },
   "time": {
-    "from": "2018-03-20T14:07:04.191Z",
-    "to": "2018-03-20T14:12:42.075Z"
+    "from": "2018-03-20T14:09:11.167Z",
+    "to": "2018-03-20T14:09:24.657Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -568,5 +568,5 @@
   "timezone": "",
   "title": "Mobile Security Metrics",
   "uid": "CiUi6kkiz",
-  "version": 17
+  "version": 19
 }
