@@ -24,6 +24,7 @@
       --from-file=grafana-primary-dashboard.json={{ role_path }}/files/grafana-primary-dashboard.json \
       --from-file=mobile-services-dashboard.json={{ role_path }}/files/mobile-services-dashboard.json \
       --from-file=mobile-app-metrics-dashboard.json={{ role_path }}/files/mobile-app-metrics-dashboard.json \
+      --from-file=mobile-security-metrics-dashboard.json={{ role_path }}/files/mobile-security-metrics-dashboard.json \
       -n '{{ namespace }}'
 
 - name: Grafana PVC
