@@ -54,7 +54,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "decimals": 2,
       "format": "none",
       "gauge": {
@@ -135,7 +135,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -213,7 +213,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "fontSize": "80%",
       "format": "short",
       "gridPos": {
@@ -258,7 +258,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "fontSize": "80%",
       "format": "short",
       "gridPos": {
@@ -318,7 +318,7 @@
     },
     {
       "columns": [],
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "fontSize": "100%",
       "gridPos": {
         "h": 9,
@@ -376,7 +376,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "fontSize": "80%",
       "format": "short",
       "gridPos": {
@@ -425,7 +425,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_POSTGRES}",
+      "datasource": "Postgres",
       "fill": 3,
       "gridPos": {
         "h": 8,
@@ -509,7 +509,7 @@
       {
         "allValue": "'%'",
         "current": {},
-        "datasource": "${DS_POSTGRES}",
+        "datasource": "Postgres",
         "hide": 0,
         "includeAll": true,
         "label": "App",
@@ -529,7 +529,7 @@
       {
         "allValue": "'%'",
         "current": {},
-        "datasource": "${DS_POSTGRES}",
+        "datasource": "Postgres",
         "hide": 0,
         "includeAll": true,
         "label": "Platform",
