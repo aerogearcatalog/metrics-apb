@@ -5,7 +5,7 @@ prometheus_port: 9090
 prometheus_proxy_port: 4180
 
 # Grafana values
-grafana_image: "docker.io/aerogearcatalog/grafana"
+grafana_image: "docker.io/aerogear/grafana"
 grafana_version: "latest"
 grafana_port: 3000
 grafana_proxy_port: 4181
