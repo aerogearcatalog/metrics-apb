@@ -852,7 +852,7 @@
               "format": "table",
               "hide": false,
               "intervalFactor": 1,
-              "rawSql": "SELECT\n  count(distinct latestEntryInTimeRange.clientId)\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time)\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange;",
+              "rawSql": "SELECT\n  count(distinct latestEntryInTimeRange.clientId)\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) and event_type='init'\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n        WHERE event_type='init'\n      ) latestEntryInTimeRange;",
               "refId": "A"
             }
           ],
@@ -934,7 +934,7 @@
               "expr": "",
               "format": "table",
               "intervalFactor": 1,
-              "rawSql": "SELECT count(*)\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time);",
+              "rawSql": "SELECT count(*)\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='init';",
               "refId": "A"
             }
           ],
@@ -1016,7 +1016,7 @@
               "expr": "",
               "format": "table",
               "intervalFactor": 1,
-              "rawSql": "SELECT\n  count(distinct data->'app'->>'appId')\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) and data->'app' ? 'appId';",
+              "rawSql": "SELECT\n  count(distinct data->'app'->>'appId')\nFROM mobileAppMetrics\n  WHERE $__timeFilter(event_time) \n    AND data->'app' ? 'appId'\n    AND event_type='init';",
               "refId": "A"
             }
           ],
@@ -1070,7 +1070,7 @@
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
-              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>'appId')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, data->'app'->>'appId' as appId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) and data->'app' ? 'appId' \n          group by clientId, appId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.data->'app'->>'appId' = latestEntry.appId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'appId'\n  GROUP by latestEntryInTimeRange.data->'app'->>'appId'\n  ORDER by latestEntryInTimeRange.data->'app'->>'appId';",
+              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>'appId')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, data->'app'->>'appId' as appId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n            AND data->'app' ? 'appId'\n            AND event_type='init'\n          group by clientId, appId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.data->'app'->>'appId' = latestEntry.appId and entry.event_time = latestEntryTime\n        WHERE event_type='init'\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'appId'\n  GROUP by latestEntryInTimeRange.data->'app'->>'appId'\n  ORDER by latestEntryInTimeRange.data->'app'->>'appId';",
               "refId": "A"
             }
           ],
@@ -1115,7 +1115,7 @@
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
-              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'device'->>'platform')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'device' ? 'platform'\n  GROUP by latestEntryInTimeRange.data->'device'->>'platform'\n  ORDER by latestEntryInTimeRange.data->'device'->>'platform';",
+              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'device'->>'platform')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time)\n            AND event_type='init'\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n        WHERE event_type='init'\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'device' ? 'platform'\n  GROUP by latestEntryInTimeRange.data->'device'->>'platform'\n  ORDER by latestEntryInTimeRange.data->'device'->>'platform';",
               "refId": "A"
             }
           ],
@@ -1160,7 +1160,7 @@
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
-              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>'sdkVersion')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time) \n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'sdkVersion'\n  GROUP by latestEntryInTimeRange.data->'app'->>'sdkVersion'\n  ORDER by latestEntryInTimeRange.data->'app'->>'sdkVersion';",
+              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>'sdkVersion')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time)\n            AND event_type='init'\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n        WHERE event_type='init'\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'sdkVersion'\n  GROUP by latestEntryInTimeRange.data->'app'->>'sdkVersion'\n  ORDER by latestEntryInTimeRange.data->'app'->>'sdkVersion';",
               "refId": "A"
             }
           ],
