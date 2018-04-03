@@ -1171,6 +1171,508 @@
       ],
       "title": "Mobile app metrics",
       "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 45,
+      "panels": [],
+      "title": "Mobile security metrics",
+      "type": "row"
+    },
+    {
+      "content": "# Mobile Security Metrics\n\nGraphs here show Self-Defence Security Check results.\n\n",
+      "gridPos": {
+        "h": 4,
+        "w": 10,
+        "x": 0,
+        "y": 4
+      },
+      "id": 46,
+      "links": [
+        {
+          "dashUri": "db/mobile-security-metrics",
+          "dashboard": "Mobile Security Metrics",
+          "keepTime": true,
+          "title": "Mobile Security Metrics main dashboard",
+          "type": "dashboard"
+        }
+      ],
+      "mode": "markdown",
+      "title": "",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#d44a3a",
+        "rgba(237, 129, 40, 0.89)",
+        "#299c46"
+      ],
+      "datasource": "Postgres",
+      "decimals": 0,
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 10,
+        "y": 4
+      },
+      "id": 47,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "perc_passed",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT sum(passed)/sum(total) * 100 as perc_passed from (\n  SELECT (select sum(case when (sec->>'passed')::boolean then 1 else 0 end)\n  from jsonb_array_elements(data->'security') as sec) as passed,\n  jsonb_array_length(data->'security') as total\n  FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n) as totals\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "50,75",
+      "title": "Passed check %",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Postgres",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 13,
+        "y": 4
+      },
+      "id": 48,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "value",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "intervalFactor": 1,
+          "rawSql": "SELECT sum(check_count) as value\nFROM (\n    SELECT jsonb_array_length(s.data->'security') as check_count\n    FROM mobileAppMetrics as s\n    WHERE $__timeFilter(s.event_time)\n      AND event_type='security'\n      AND data ? 'security'\n  ) AS check_totals",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Check count",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Postgres",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 16,
+        "y": 4
+      },
+      "id": 49,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "count",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "intervalFactor": 1,
+          "rawSql": "SELECT count(clientId)\nFROM mobileAppMetrics\nWHERE $__timeFilter(event_time)\n  AND event_type='security'\n  AND data ? 'security';",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Unique clients with checks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Postgres",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 19,
+        "y": 4
+      },
+      "id": 50,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "count",
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "table",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT count(DISTINCT data->'app'->>'appId')\n  FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n      AND event_type='security'\n      AND data ? 'security'\n      AND data ? 'app' AND data->'app' ? 'appId';",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Apps with checks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 51,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "sort": "current",
+        "sortDesc": false,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  checks.entry->>'name' as checkName,\n  count(*)\nFROM\n(\n  SELECT jsonb_array_elements(data->'security') as entry \n    FROM mobileAppMetrics \n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n) as checks\nWHERE checks.entry->>'passed' = 'false'\nGROUP BY checkName;",
+          "refId": "A"
+        }
+      ],
+      "title": "Fails per check type",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 8,
+        "y": 8
+      },
+      "id": 52,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "sort": "current",
+        "sortDesc": false,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT now() as time, appId, sum(failed)\n  FROM\n  (SELECT\n    data->'app'->>'appId' as appId,\n    (select sum(case when (sec->>'passed')::boolean then 0 else 1 end) from jsonb_array_elements(data->'security') as sec) as failed\n    FROM mobileAppMetrics\n    WHERE $__timeFilter(event_time)\n      AND event_type='security'\n      AND data ? 'security'\n      AND data ? 'app' AND data->'app' ? 'appId') as fails\n  GROUP BY appId;",
+          "refId": "A"
+        }
+      ],
+      "title": "Fails per app",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 15,
+        "y": 8
+      },
+      "id": 53,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "sort": "current",
+        "sortDesc": false,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "rawSql": "SELECT now() as time, platform, sum(failed)\n  FROM\n  (SELECT\n    data->'device'->>'platform' as platform,\n    (select sum(case when (sec->>'passed')::boolean then 0 else 1 end) from jsonb_array_elements(data->'security') as sec) as failed\n    FROM mobileAppMetrics\n    WHERE $__timeFilter(event_time)\n      AND event_type='security'\n      AND data ? 'security'\n      AND data ? 'device' AND data->'device' ? 'platform') as fails\n  GROUP BY platform;",
+          "refId": "A"
+        }
+      ],
+      "title": "Fails per platform",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
     }
   ],
   "refresh": false,
@@ -1180,80 +1682,7 @@
     "mobile-services"
   ],
   "templating": {
-    "list": [
-      {
-        "auto": true,
-        "auto_count": 30,
-        "auto_min": "10s",
-        "current": {
-          "text": "auto",
-          "value": "$__auto_interval_resolutionInterval"
-        },
-        "hide": 0,
-        "label": "Resolution",
-        "name": "resolutionInterval",
-        "options": [
-          {
-            "selected": true,
-            "text": "auto",
-            "value": "$__auto_interval_resolutionInterval"
-          },
-          {
-            "selected": false,
-            "text": "1m",
-            "value": "1m"
-          },
-          {
-            "selected": false,
-            "text": "10m",
-            "value": "10m"
-          },
-          {
-            "selected": false,
-            "text": "30m",
-            "value": "30m"
-          },
-          {
-            "selected": false,
-            "text": "1h",
-            "value": "1h"
-          },
-          {
-            "selected": false,
-            "text": "6h",
-            "value": "6h"
-          },
-          {
-            "selected": false,
-            "text": "12h",
-            "value": "12h"
-          },
-          {
-            "selected": false,
-            "text": "1d",
-            "value": "1d"
-          },
-          {
-            "selected": false,
-            "text": "7d",
-            "value": "7d"
-          },
-          {
-            "selected": false,
-            "text": "14d",
-            "value": "14d"
-          },
-          {
-            "selected": false,
-            "text": "30d",
-            "value": "30d"
-          }
-        ],
-        "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
-        "refresh": 2,
-        "type": "interval"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now/d",
