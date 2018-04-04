@@ -5,9 +5,12 @@ This guide shows how to use app metrics to provide rich visualizations regarding
 [discrete]
 == Prerequisites
 
-* An App that is using the AeroGear SDK (link TODO)
-* A running Metrics Service (link TODO)
-* An OpenShift account that will provide access to Grafana in the Metrics Service (link TODO)
+* An App that is using the AeroGear SDK
+** link:https://github.com/aerogear/aerogear-android-sdk[Android SDK]
+** link:https://github.com/aerogear/aerogear-ios-sdk/[iOS SDK]
+** link:https://github.com/aerogear/aerogear-js-sdk/[Apache Cordova SDK]
+* Metrics service deployment from the Service Catalog
+** https://github.com/aerogearcatalog/metrics-apb
 
 [discrete]
 == Accessing visualisations
