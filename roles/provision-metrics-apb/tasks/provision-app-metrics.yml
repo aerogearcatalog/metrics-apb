@@ -128,6 +128,13 @@
   template:
     src: configmap.yml.j2
     dest: /tmp/configmap.yaml
+  when: _apb_service_instance_id is defined
+
+- name: Create metrics test configmap template
+  template:
+    src: configmap_test.yml.j2
+    dest: /tmp/configmap.yaml
+  when: _apb_service_instance_id is not defined
 
 - name: Create metrics public client config map
   shell: oc create -f /tmp/configmap.yaml -n {{ namespace }}

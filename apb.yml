@@ -1,6 +1,6 @@
 version: 1.0
 name: metrics-apb
-description: UPDATE Installs a metrics service based on Prometheus and Grafana
+description: Installs a metrics service based on Prometheus and Grafana
 bindable: False
 async: optional
 tags:
