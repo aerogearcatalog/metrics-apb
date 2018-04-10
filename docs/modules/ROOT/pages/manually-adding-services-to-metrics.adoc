@@ -49,17 +49,17 @@ documentation on scrape_config] for more details.
 
 1.  Select your project in the `My Projects` sidebar
 
-image:img/manually-adding-services-to-metrics/myprojects.png[My
+image::manually-adding-services-to-metrics/myprojects.png[My
 projects]
 
 2.  Navigate to Prometheus' Config Map via
 `Resources > Config Maps > prometheus-configmap`
 
-image:img/manually-adding-services-to-metrics/configmap.png[Config Map]
+image::manually-adding-services-to-metrics/configmap.png[Config Map]
 
 3.  Enter editing mode through `Actions > Edit YAML`
 
-image:img/manually-adding-services-to-metrics/edit.png[Edit YAML]
+image::manually-adding-services-to-metrics/edit.png[Edit YAML]
 
 4.  Include a new `scrape_config` targeting the Grafana service:
 
@@ -98,7 +98,7 @@ the updated Config Map by going to
 
 6. Verify the new target by navigating to the list of targets in Prometheus at https://prometheus-{project_name}.192.168.37.1.nip.io/targets, or by accessing the Prometheus web interface and navigating to `Status > Targets`:
 
-image:img/manually-adding-services-to-metrics/grafana-target.png[Grafana Target]
+image::manually-adding-services-to-metrics/grafana-target.png[Grafana Target]
 
 === Via the `oc` cli
 

@@ -22,7 +22,7 @@ After the Metrics service (includes Grafana tool and Prometheus monitoring syste
 you should be able to see the "Keycloak Metrics" in the list of available dashboards 
 (navigate to Grafana's exposed URL -> Log in -> Home -> Select *Keycloak Metrics*)
 
-image:img/keycloak-dashboard/keycloak-dashboard-overview.png[keycloak-dashboard]
+image::keycloak-dashboard/keycloak-dashboard-overview.png[keycloak-dashboard]
 
 == Dashboard's panels description
 
