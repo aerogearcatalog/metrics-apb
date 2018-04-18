@@ -16,7 +16,7 @@ After the Metrics service (includes Grafana tool and Prometheus monitoring syste
 you should be able to see the "Mobile Services" in the list of available dashboards 
 (navigate to Grafana's exposed URL -> Log in -> Home -> Select *Mobile Services*)
 
-image:img/mobile-services-dashboard/mobile-services-dashboard-overview.png[mobile-services-dashboard]
+image::mobile-services-dashboard/mobile-services-dashboard-overview.png[mobile-services-dashboard]
 
 The dashboard contains rows with panels, each row for a different service. 
 See the description below for more information about each service's panels.
@@ -24,7 +24,7 @@ See the description below for more information about each service's panels.
 
 == 1. Keycloak
 
-image:img/mobile-services-dashboard/keycloak-panels.png[keycloak-panels]
+image::mobile-services-dashboard/keycloak-panels.png[keycloak-panels]
 
 === Keycloak service description
 
