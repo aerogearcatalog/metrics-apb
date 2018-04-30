@@ -1,0 +1,23 @@
+- name: Retrieve metrics route
+  shell: "oc get configmaps/{{ prometheus_secret_name }} -n {{ namespace }} -o jsonpath={.data.uri}"
+  register: metrics_uri
+
+- set_fact:
+    METRICS_URI: "{{ metrics_uri.stdout }}"
+
+- name: "Create metrics bind secret yaml file"
+  template:
+    src: bind_secret.yml
+    dest: /tmp/bind-secret.yaml
+
+- name: "Create binding secret"
+  shell: "oc create -f /tmp/bind-secret.yaml -n {{ namespace }}"
+
+- name: "Delete binding secret template file"
+  file: path=/tmp/bind-secret.yaml state=absent
+
+- name: Encode {{ CLIENT_ID }} credentials
+  asb_encode_binding:
+    fields:
+      clientId: "{{ CLIENT_ID }}"
+  when: encode_asb_binding
