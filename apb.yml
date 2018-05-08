@@ -1,10 +1,11 @@
 version: 1.0
 name: metrics-apb
 description: Installs a metrics service based on Prometheus and Grafana
-bindable: False
+bindable: True
 async: optional
 tags:
   - mobile-service
+  - mobile-client-enabled
 metadata:
   displayName: Metrics
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
@@ -43,4 +44,9 @@ plans:
         type: string
         required: False
         title: Postgres Password
+    bind_parameters:
+      - name: CLIENT_ID
+        required: True
+        title: Mobile Client ID
+        type: string
         

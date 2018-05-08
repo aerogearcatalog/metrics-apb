@@ -1,0 +1,5 @@
+- name: Delete {{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }} secret
+  k8s_v1_secret:
+    name: "{{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }}"
+    namespace: "{{ namespace }}"
+    state: absent
