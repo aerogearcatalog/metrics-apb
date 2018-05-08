@@ -16,7 +16,9 @@ plans:
   - name: default
     description: This plan sets up Prometheus and Grafana for metrics and data visualisation
     free: True
-    metadata: {}
+    metadata:
+      mobileclient_bind_parameters_data:
+        - '{"name": "CLIENT_ID", "value": "metadata.name", "type": "path"}'
     parameters: 
       - name: GRAFANA_STORAGE_SIZE
         required: True
