@@ -1045,7 +1045,7 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 8,
+            "w": 6,
             "x": 0,
             "y": 7
           },
@@ -1090,8 +1090,8 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 7,
-            "x": 8,
+            "w": 6,
+            "x": 6,
             "y": 7
           },
           "id": 37,
@@ -1135,8 +1135,8 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 7,
-            "x": 15,
+            "w": 6,
+            "x": 12,
             "y": 7
           },
           "id": 39,
@@ -1165,6 +1165,51 @@
             }
           ],
           "title": "Unique clients per sdk version",
+          "type": "grafana-piechart-panel",
+          "valueName": "current"
+        },
+        {
+          "aliasColors": {},
+          "cacheTimeout": null,
+          "combine": {
+            "label": "Others",
+            "threshold": 0
+          },
+          "datasource": "Postgres",
+          "fontSize": "80%",
+          "format": "short",
+          "gridPos": {
+            "h": 9,
+            "w": 6,
+            "x": 18,
+            "y": 7
+          },
+          "id": 54,
+          "interval": null,
+          "legend": {
+            "show": true,
+            "sort": "current",
+            "sortDesc": false,
+            "values": true
+          },
+          "legendType": "Under graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "pieType": "pie",
+          "strokeWidth": 1,
+          "targets": [
+            {
+              "alias": "",
+              "expr": "",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "rawSql": "SELECT\n  now() as time,\n  count(latestEntryInTimeRange.clientId),\n  (latestEntryInTimeRange.data->'app'->>'framework')::text as metric\nFROM\n    (select entry.clientId, entry.event_time, entry.data \n      from mobileAppMetrics entry \n      inner join \n        (select clientId, max(event_time) as latestEntryTime \n          from mobileAppMetrics \n          where $__timeFilter(event_time)\n            AND event_type='init'\n          group by clientId\n        ) \n        latestEntry \n        on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n        WHERE event_type='init'\n      ) latestEntryInTimeRange\n  where latestEntryInTimeRange.data->'app' ? 'framework'\n  GROUP by latestEntryInTimeRange.data->'app'->>'framework'\n  ORDER by latestEntryInTimeRange.data->'app'->>'framework';",
+              "refId": "A"
+            }
+          ],
+          "title": "Unique clients per framework",
           "type": "grafana-piechart-panel",
           "valueName": "current"
         }
@@ -1548,7 +1593,7 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 8,
+            "w": 6,
             "x": 0,
             "y": 8
           },
@@ -1593,8 +1638,8 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 7,
-            "x": 8,
+            "w": 6,
+            "x": 6,
             "y": 8
           },
           "id": 52,
@@ -1638,8 +1683,8 @@
           "format": "short",
           "gridPos": {
             "h": 9,
-            "w": 7,
-            "x": 15,
+            "w": 6,
+            "x": 12,
             "y": 8
           },
           "id": 53,
@@ -1668,6 +1713,51 @@
             }
           ],
           "title": "Fails per platform",
+          "type": "grafana-piechart-panel",
+          "valueName": "current"
+        },
+        {
+          "aliasColors": {},
+          "cacheTimeout": null,
+          "combine": {
+            "label": "Others",
+            "threshold": 0
+          },
+          "datasource": "Postgres",
+          "fontSize": "80%",
+          "format": "short",
+          "gridPos": {
+            "h": 9,
+            "w": 6,
+            "x": 18,
+            "y": 8
+          },
+          "id": 55,
+          "interval": null,
+          "legend": {
+            "show": true,
+            "sort": "current",
+            "sortDesc": false,
+            "values": true
+          },
+          "legendType": "Under graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "pieType": "pie",
+          "strokeWidth": 1,
+          "targets": [
+            {
+              "alias": "",
+              "expr": "",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "rawSql": "SELECT now() as time, framework, sum(failed)\n  FROM\n  (SELECT\n    data->'app'->>'framework' as framework,\n    (select sum(case when (sec->>'passed')::boolean then 0 else 1 end) from jsonb_array_elements(data->'security') as sec) as failed\n    FROM mobileAppMetrics\n    WHERE $__timeFilter(event_time)\n      AND event_type='security'\n      AND data ? 'security'\n      AND data ? 'app' AND data->'app' ? 'framework') as fails\n  GROUP BY framework;",
+              "refId": "A"
+            }
+          ],
+          "title": "Fails per framework",
           "type": "grafana-piechart-panel",
           "valueName": "current"
         }
