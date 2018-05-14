@@ -118,7 +118,7 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT\n  cast((select sum(case when (securityCheck->>'passed')::boolean then 1 else 0 end)) as decimal) / cast(count(*) as decimal) * 100\nFROM\n  (SELECT jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
+          "rawSql": "SELECT\n  cast((select sum(case when (securityCheck->>'passed')::boolean then 1 else 0 end)) as decimal) / cast(count(*) as decimal) * 100\nFROM\n  (SELECT jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'app' AND data->'app' ? 'framework' AND data->'app'->>'framework' like $framework\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
           "refId": "A"
         }
       ],
@@ -198,7 +198,7 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT count(*)\nFROM\n  (SELECT jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
+          "rawSql": "SELECT count(*)\nFROM\n  (SELECT jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n        AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
           "refId": "A"
         }
       ],
@@ -278,7 +278,7 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT count(DISTINCT clientId)\nFROM\n  (SELECT clientId, jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
+          "rawSql": "SELECT count(DISTINCT clientId)\nFROM\n  (SELECT clientId, jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n        AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
           "refId": "A"
         }
       ],
@@ -358,7 +358,7 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT count(DISTINCT appId)\nFROM\n  (SELECT data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
+          "rawSql": "SELECT count(DISTINCT appId)\nFROM\n  (SELECT data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as securityCheck\n    FROM mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n        AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n  ) as checksRaw\nWHERE securityCheck->>'name' like $checkType;",
           "refId": "A"
         }
       ],
@@ -387,7 +387,7 @@
       "format": "short",
       "gridPos": {
         "h": 9,
-        "w": 8,
+        "w": 6,
         "x": 0,
         "y": 5
       },
@@ -409,7 +409,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  checks.entry->>'name' as checkName,\n  count(*)\nFROM\n(\n  SELECT jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY checkName;",
+          "rawSql": "SELECT\n  now() as time,\n  checks.entry->>'name' as checkName,\n  count(*)\nFROM\n(\n  SELECT jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY checkName;",
           "refId": "A"
         }
       ],
@@ -429,8 +429,8 @@
       "format": "short",
       "gridPos": {
         "h": 9,
-        "w": 8,
-        "x": 8,
+        "w": 6,
+        "x": 6,
         "y": 5
       },
       "id": 52,
@@ -451,7 +451,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  appId,\n  count(*)\nFROM\n(\n  SELECT data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY appId;",
+          "rawSql": "SELECT\n  now() as time,\n  appId,\n  count(*)\nFROM\n(\n  SELECT data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY appId;",
           "refId": "A"
         }
       ],
@@ -471,8 +471,8 @@
       "format": "short",
       "gridPos": {
         "h": 9,
-        "w": 8,
-        "x": 16,
+        "w": 6,
+        "x": 12,
         "y": 5
       },
       "id": 53,
@@ -493,11 +493,53 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  now() as time,\n  platform,\n  count(*)\nFROM\n(\n  SELECT data->'device'->>'platform' as platform, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY platform;",
+          "rawSql": "SELECT\n  now() as time,\n  platform,\n  count(*)\nFROM\n(\n  SELECT data->'device'->>'platform' as platform, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY platform;",
           "refId": "A"
         }
       ],
       "title": "Fails per platform",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "Postgres",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "id": 58,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  now() as time,\n  framework,\n  count(*)\nFROM\n(\n  SELECT data->'app'->>'framework' as framework, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY framework;",
+          "refId": "A"
+        }
+      ],
+      "title": "Fails per framework",
       "type": "grafana-piechart-panel",
       "valueName": "current"
     },
@@ -510,7 +552,7 @@
       "fill": 1,
       "gridPos": {
         "h": 9,
-        "w": 8,
+        "w": 6,
         "x": 0,
         "y": 14
       },
@@ -542,7 +584,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  checks.entry->>'name' as checkName,\n  count(*)\nFROM\n(\n  SELECT event_time, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY checkName, time;",
+          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  checks.entry->>'name' as checkName,\n  count(*)\nFROM\n(\n  SELECT event_time, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY checkName, time;",
           "refId": "A"
         }
       ],
@@ -591,8 +633,8 @@
       "fill": 1,
       "gridPos": {
         "h": 9,
-        "w": 8,
-        "x": 8,
+        "w": 6,
+        "x": 6,
         "y": 14
       },
       "id": 56,
@@ -623,7 +665,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  appId,\n  count(*)\nFROM\n(\n  SELECT event_time, data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY appId, time;",
+          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  appId,\n  count(*)\nFROM\n(\n  SELECT event_time, data->'app'->>'appId' as appId, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY appId, time;",
           "refId": "A"
         }
       ],
@@ -672,8 +714,8 @@
       "fill": 1,
       "gridPos": {
         "h": 9,
-        "w": 8,
-        "x": 16,
+        "w": 6,
+        "x": 12,
         "y": 14
       },
       "id": 57,
@@ -704,7 +746,7 @@
           "expr": "",
           "format": "time_series",
           "intervalFactor": 1,
-          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  platform,\n  count(*)\nFROM\n(\n  SELECT event_time, data->'device'->>'platform' as platform, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY platform, time;",
+          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  platform,\n  count(*)\nFROM\n(\n  SELECT event_time, data->'device'->>'platform' as platform, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY platform, time;",
           "refId": "A"
         }
       ],
@@ -712,6 +754,87 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Fails per platform",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Postgres",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 14
+      },
+      "id": 59,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "rawSql": "SELECT\n  $__timeGroup(checks.event_time, $resolutionInterval),\n  framework,\n  count(*)\nFROM\n(\n  SELECT event_time, data->'app'->>'framework' as framework, jsonb_array_elements(data->'security') as entry\n    FROM mobileAppMetrics\n  WHERE $__timeFilter(event_time)\n    AND event_type='security'\n    AND data ? 'security'\n    AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n    AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n) as checks\nWHERE checks.entry->>'passed' = 'false'\n  AND checks.entry->>'name' like $checkType\nGROUP BY framework, time;",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Fails per framework",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -790,7 +913,7 @@
           "alias": "",
           "format": "table",
           "hide": false,
-          "rawSql": "SELECT\n    latestEntryInTimeRange.clientId as \"Client Id\",\n    latestEntryInTimeRange.data->'app'->>'appId' as \"App\",\n    latestEntryInTimeRange.data->'app'->>'appVersion' as \"App Version\",\n    latestEntryInTimeRange.data->'app'->>'sdkVersion' as \"SDK Version\",\n    latestEntryInTimeRange.data->'device'->'platform' as \"Platform\",\n    latestEntryInTimeRange.data->'device'->>'platformVersion' as \"Platform Version\",\n    failCount as \"Fail Count\"\nFROM\n(\n  SELECT clientId, count(*) as failCount\n  FROM\n    (SELECT\n        clientId,\n        jsonb_array_elements(data->'security') as entry\n      FROM mobileAppMetrics\n      WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n    ) as checks\n  WHERE checks.entry->>'passed' = 'false'\n    AND checks.entry->>'name' like $checkType\n  GROUP BY clientId\n  ORDER BY failCount desc\n  LIMIT 10\n) clientFails\nJOIN\n(\n  select entry.clientId, entry.event_time, entry.data\n    from mobileAppMetrics entry\n    inner join\n      (select clientId, max(event_time) as latestEntryTime\n        from mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n          and event_type='security'\n        group by clientId\n      )\n      latestEntry\n      on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      where event_type='security'\n) latestEntryInTimeRange\nON clientFails.clientId = latestEntryInTimeRange.clientId\nORDER BY \"Fail Count\" desc;",
+          "rawSql": "SELECT\n    latestEntryInTimeRange.clientId as \"Client Id\",\n    latestEntryInTimeRange.data->'app'->>'appId' as \"App\",\n    latestEntryInTimeRange.data->'app'->>'appVersion' as \"App Version\",\n    latestEntryInTimeRange.data->'app'->>'sdkVersion' as \"SDK Version\",\n    latestEntryInTimeRange.data->'app'->>'framework' as \"Framework\",\n    latestEntryInTimeRange.data->'device'->'platform' as \"Platform\",\n    latestEntryInTimeRange.data->'device'->>'platformVersion' as \"Platform Version\",\n    failCount as \"Fail Count\"\nFROM\n(\n  SELECT clientId, count(*) as failCount\n  FROM\n    (SELECT\n        clientId,\n        jsonb_array_elements(data->'security') as entry\n      FROM mobileAppMetrics\n      WHERE $__timeFilter(event_time)\n        AND event_type='security'\n        AND data ? 'security'\n        AND data ? 'app' AND data->'app' ? 'appId' and data->'app'->>'appId' like $appId\n        AND data ? 'device' AND data->'device' ? 'platform' and data->'device'->>'platform' like $platform\n        AND data ? 'app' AND data->'app' ? 'framework' and data->'app'->>'framework' like $framework\n    ) as checks\n  WHERE checks.entry->>'passed' = 'false'\n    AND checks.entry->>'name' like $checkType\n  GROUP BY clientId\n  ORDER BY failCount desc\n  LIMIT 10\n) clientFails\nJOIN\n(\n  select entry.clientId, entry.event_time, entry.data\n    from mobileAppMetrics entry\n    inner join\n      (select clientId, max(event_time) as latestEntryTime\n        from mobileAppMetrics\n        WHERE $__timeFilter(event_time)\n          and event_type='security'\n        group by clientId\n      )\n      latestEntry\n      on entry.clientId = latestEntry.clientId and entry.event_time = latestEntryTime\n      where event_type='security'\n) latestEntryInTimeRange\nON clientFails.clientId = latestEntryInTimeRange.clientId\nORDER BY \"Fail Count\" desc;",
           "refId": "A"
         }
       ],
@@ -834,6 +957,24 @@
         "multi": false,
         "name": "platform",
         "query": "select distinct data->'device'->>'platform' from mobileappmetrics where event_type='security';",
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "'%'",
+        "datasource": "Postgres",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Framework",
+        "multi": false,
+        "name": "framework",
+        "query": "select distinct data->'app'->>'framework' from mobileappmetrics where event_type='security';",
         "refresh": 2,
         "regex": "",
         "sort": 1,
