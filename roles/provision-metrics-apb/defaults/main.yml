@@ -10,6 +10,7 @@ grafana_version: "latest"
 grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
+grafana_admin_username: admin
 
 # Api server values
 api_server_image: "docker.io/aerogear/aerogear-app-metrics"
