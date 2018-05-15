@@ -141,6 +141,7 @@
       - name: web
         port: 80
         target_port: '{{ grafana_port }}'
+  register: grafana_internal_service
 
 - name: create grafana route
   openshift_v1_route:
@@ -161,3 +162,47 @@
   until: grafana_result.stdout.find("2") != -1
   retries: 30
   delay: 5
+
+# in order to make our "mobile-services" dashboard the home dashboard,
+# we need to get its id and then update org preferences with that id
+- name: "Search mobile-services dashboard on service host {{ grafana_internal_service.service.spec.cluster_ip }}"
+  uri:
+    url: "http://{{ grafana_internal_service.service.spec.cluster_ip }}/api/search?tag=mobile-services"
+    headers:
+      X-Forwarded-User: "{{ grafana_admin_username }}"
+  retries: 5
+  until: mobile_services_dashboard_search_response.status == 200
+  delay: 5
+  register: mobile_services_dashboard_search_response
+
+- name: "Get org preferences on service host {{ grafana_internal_service.service.spec.cluster_ip }}"
+  uri:
+    url: "http://{{ grafana_internal_service.service.spec.cluster_ip }}/api/org/preferences"
+    headers:
+      X-Forwarded-User: "{{ grafana_admin_username }}"
+  retries: 5
+  until: org_preferences_response.status == 200
+  delay: 5
+  register: org_preferences_response
+
+- name: "Extract org preferences response body"
+  set_fact:
+    org_preferences: "{{org_preferences_response.json}}"
+
+- name: "Change home dashboard id to mobile-services dashboard id {{ mobile_services_dashboard_search_response.json[0]['id'] }}"
+  set_fact:
+    org_preferences: "{{ org_preferences | combine({'homeDashboardId': mobile_services_dashboard_search_response.json[0]['id']}) }}"
+
+- name: "Update org preferences with the dashboard id on service host {{ grafana_internal_service.service.spec.cluster_ip }}"
+  uri:
+    url: "http://{{ grafana_internal_service.service.spec.cluster_ip }}/api/org/preferences"
+    headers:
+      X-Forwarded-User: "{{ grafana_admin_username }}"
+      Content-Type: "application/json"
+    method: PUT
+    body: "{{ org_preferences | to_json }}"
+    body_format: json
+  retries: 5
+  until: org_pref_update_response.status == 200
+  delay: 5
+  register: org_pref_update_response
