@@ -1,0 +1,13 @@
+= Provisioning the Metrics Service
+
+When provisioning a metrics service, you are prompted to set the following:
+
+// tag::provisioning-metrics[]
+
+* Grafana Storage Size (Gb)
+* Prometheus Storage Size (Gb)
+* Postgres Storage Size (Gb)
+* Postgres User
+* Postgres Password
+
+// end::provisioning-metrics[]

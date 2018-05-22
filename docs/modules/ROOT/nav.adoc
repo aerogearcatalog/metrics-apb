@@ -1,4 +1,5 @@
 * xref:index.adoc[Overview]
+* xref:provisioning.adoc[Provisioning]
 * xref:using-mobile-services-dashboard.adoc[Using the Mobile Services Dashboard]
 * xref:using-dashboards.adoc[Using Dashboards]
 * xref:giving-an-openshift-user-access-to-metrics.adoc[Sharing Access to Dashboards]
