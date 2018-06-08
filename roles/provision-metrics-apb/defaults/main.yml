@@ -1,12 +1,12 @@
 # Prometheus Values
 prometheus_image: "registry.access.redhat.com/openshift3/prometheus"
-prometheus_version: "latest"
+prometheus_version: "v3.9"
 prometheus_port: 9090
 prometheus_proxy_port: 4180
 
 # Grafana values
 grafana_image: "docker.io/aerogear/grafana"
-grafana_version: "latest"
+grafana_version: "v5.0.0-pre1"
 grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
@@ -14,12 +14,12 @@ grafana_admin_username: admin
 
 # Api server values
 api_server_image: "docker.io/aerogear/aerogear-app-metrics"
-api_server_version: "latest"
+api_server_version: "0.0.12"
 api_server_port: 3000
 
 # Postgres values
 postgres_image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
-postgres_version: "latest"
+postgres_version: "1"
 postgres_port: 5432
 postgres_user: "{{ POSTGRES_USER | default('user', true) }}"
 postgres_password: "{{ POSTGRES_PASSWORD | default(lookup('password', '/tmp/pass chars=ascii_letters,digits'), true) }}"
