@@ -4,6 +4,8 @@ The OpenShift Ansible Broker is used to provision Mobile Services to an OpenShif
 
 == About the Metrics Service
 
+// tag::about-metrics[]
+
 The metrics service provides monitoring and metrics for provisioned mobile services.
 
 The service consists of link:https://prometheus.io/[Prometheus] and link:https://grafana.com/[Grafana] with an OAuth Proxy
@@ -13,6 +15,8 @@ link:https://github.com/aerogear/mobile-docs/blob/master/services/making-mobile-
 and link:https://github.com/aerogear/mobile-docs/blob/master/services/working-with-grafana-dashboards.adoc[configMaps], 
 to allow the discovery of service metrics and visualization of data. The metrics service makes it easy to monitor provisioned mobile services and 
 link:https://github.com/aerogear/mobile-docs/blob/master/services/manually-adding-services-to-metrics.adoc[custom services] in your project. 
+
+// end::about-metrics[]
 
 == Features
 
