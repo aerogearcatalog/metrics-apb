@@ -1481,7 +1481,7 @@
               "expr": "",
               "format": "table",
               "intervalFactor": 1,
-              "rawSql": "SELECT count(clientId)\nFROM mobileAppMetrics\nWHERE $__timeFilter(event_time)\n  AND event_type='security'\n  AND data ? 'security';",
+              "rawSql": "SELECT count(DISTINCT clientId)\nFROM mobileAppMetrics\nWHERE $__timeFilter(event_time)\n  AND event_type='security'\n  AND data ? 'security';",
               "refId": "A"
             }
           ],
