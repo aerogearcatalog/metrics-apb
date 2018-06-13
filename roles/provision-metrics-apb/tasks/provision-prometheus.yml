@@ -11,7 +11,7 @@
     name: '{{ prometheus_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
-      app: prometheus
+      app: metrics
       service: prometheus
     access_modes:
       - ReadWriteOnce
@@ -24,7 +24,7 @@
     name: prometheus
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: metrics
       service: prometheus
     replicas: 1
     selector:
@@ -75,7 +75,7 @@
     name: '{{ prometheus_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: metrics
       service: prometheus
     selector:
       app: prometheus
@@ -90,7 +90,7 @@
     name: '{{ prometheus_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: metrics
       service: prometheus
     selector:
       app: prometheus
@@ -105,7 +105,7 @@
     name: '{{ prometheus_route_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: prometheus
+      app: metrics
       service: prometheus
     to_name: prometheus
     spec_port_target_port: web
