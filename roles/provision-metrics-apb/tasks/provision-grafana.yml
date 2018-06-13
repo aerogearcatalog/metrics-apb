@@ -32,7 +32,7 @@
     name: '{{ grafana_claim_name }}'
     namespace: "{{ namespace }}"
     labels:
-      app: grafana
+      app: metrics
       service: prometheus
     access_modes:
       - ReadWriteMany
@@ -45,7 +45,7 @@
     name: grafana
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
+      app: metrics
       service: prometheus
     replicas: 1
     selector:
@@ -117,7 +117,7 @@
     name: '{{ grafana_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
+      app: metrics
       service: prometheus
     selector:
       app: grafana
@@ -132,7 +132,7 @@
     name: '{{ grafana_internal_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
+      app: metrics
       service: prometheus
     selector:
       app: grafana
@@ -145,10 +145,12 @@
 
 - name: create grafana route
   openshift_v1_route:
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
     name: '{{ grafana_route_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: grafana
+      app: metrics
       service: prometheus
     to_name: grafana
     spec_port_target_port: web

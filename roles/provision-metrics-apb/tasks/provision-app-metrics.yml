@@ -3,7 +3,7 @@
     name: "{{ postgres_claim_name}}"
     namespace: "{{ namespace }}"
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     access_modes:
       - ReadWriteMany
@@ -16,7 +16,7 @@
     name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: postgres
+      app: metrics
       service: aerogear-app-metrics
     replicas: 1
     selector:
@@ -51,7 +51,7 @@
     name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: postgres
+      app: metrics
       service: aerogear-app-metrics
     selector:
       app: postgres
@@ -66,7 +66,7 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     replicas: 1
     selector:
@@ -100,7 +100,7 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     selector:
       app: aerogear-app-metrics
@@ -112,10 +112,12 @@
 
 - name: Create api server https route
   openshift_v1_route:
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     to_name: aerogear-app-metrics
     spec_port_target_port: web

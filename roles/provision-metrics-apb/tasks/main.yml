@@ -11,16 +11,7 @@
 
 - include_tasks: provision-prometheus.yml 
 - include_tasks: provision-grafana.yml
-
 - include_tasks: provision-app-metrics.yml
-  when:
-    - POSTGRESQL_EPHEMERAL is undefined or
-      not POSTGRESQL_EPHEMERAL
-
-- include_tasks: provision-app-metrics-ephemeral.yml
-  when:
-    - POSTGRESQL_EPHEMERAL is defined or
-      POSTGRESQL_EPHEMERAL
 
 # This is currently needed until https://github.com/openshift/ansible-service-broker/issues/847 is resolved
 - name: "Make data availble for binding"

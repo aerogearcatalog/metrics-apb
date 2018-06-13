@@ -21,7 +21,7 @@ node ("ocp-slave") {
 
     stage('Run APB test') {
         apb_container_id = sh (
-            script: "docker run --detach --net=host --privileged -v $PWD:/mnt -v $HOME/.kube:/.kube -v /var/run/docker.sock:/var/run/docker.sock -u $UID docker.io/ansibleplaybookbundle/apb-tools:${apb_version} test --registry-route docker-registry.default.svc:5000",
+            script: "docker run --detach --net=host --privileged -v \$PWD:/mnt -v \$HOME/.kube:/.kube -v /var/run/docker.sock:/var/run/docker.sock -u \$UID docker.io/ansibleplaybookbundle/apb-tools:${apb_version} test --registry-route docker-registry.default.svc:5000",
             returnStdout: true
         ).trim()
     }
