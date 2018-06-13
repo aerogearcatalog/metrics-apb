@@ -112,6 +112,8 @@
 
 - name: Create api server https route
   openshift_v1_route:
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:

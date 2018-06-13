@@ -102,6 +102,8 @@
 
 - name: create prometheus route
   openshift_v1_route:
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
     name: '{{ prometheus_route_name }}'
     namespace: '{{ namespace }}'
     labels:
