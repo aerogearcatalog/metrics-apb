@@ -3,7 +3,7 @@
     name: "{{ postgres_claim_name}}"
     namespace: "{{ namespace }}"
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     access_modes:
       - ReadWriteMany
@@ -51,7 +51,7 @@
     name: '{{ postgres_service_name }}'
     namespace: '{{ namespace }}'
     labels:
-      app: postgres
+      app: metrics
       service: aerogear-app-metrics
     selector:
       app: postgres
@@ -100,7 +100,7 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     selector:
       app: aerogear-app-metrics
@@ -115,7 +115,7 @@
     name: aerogear-app-metrics
     namespace: '{{ namespace }}'
     labels:
-      app: aerogear-app-metrics
+      app: metrics
       service: aerogear-app-metrics
     to_name: aerogear-app-metrics
     spec_port_target_port: web
