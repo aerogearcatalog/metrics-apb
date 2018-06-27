@@ -9,12 +9,12 @@ tags:
 metadata:
   displayName: Metrics
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
-  documentationUrl: "https://prometheus.io/docs/introduction/overview/"
+  documentationUrl: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
   providerDisplayName: "Red Hat, Inc."
-  sdk-docs-android: "https://docs.aerogear.org/android-sdk/latest/getting-started/metrics.html"
-  sdk-docs-cordova: "https://github.com/aerogearcatalog/metrics-apb/blob/master/docs/modules/ROOT/pages/app_metrics_guide.adoc"
-  sdk-docs-ios: "https://github.com/aerogearcatalog/metrics-apb/blob/master/docs/modules/ROOT/pages/app_metrics_guide.adoc"
-  sdk-docs-xamarin: "https://github.com/aerogearcatalog/metrics-apb/blob/master/docs/modules/ROOT/pages/app_metrics_guide.adoc"
+  sdk-docs-android: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
+  sdk-docs-cordova: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
+  sdk-docs-ios: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
+  sdk-docs-xamarin: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
   serviceName: metrics
 plans:
   - name: default
