@@ -163,7 +163,7 @@
   register: grafana_result
   until: grafana_result.stdout.find("2") != -1
   retries: 30
-  delay: 5
+  delay: 10
 
 # in order to make our "mobile-services" dashboard the home dashboard,
 # we need to get its id and then update org preferences with that id

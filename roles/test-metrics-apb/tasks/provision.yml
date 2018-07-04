@@ -1,57 +1,57 @@
 ---
 
-- name: Check that the prometheus webpage is accessible
+- name: "Test|Check that the prometheus webpage is accessible"
   uri:
     url: "https://{{ prometheus_route.route.spec.host }}"
     return_content: yes
     validate_certs: no
   register: webpage
-  retries: 10
-  delay: 20
+  retries: 20
+  delay: 10
   failed_when:
     - webpage.status == 403
     - '"Log in with OpenShift" not in webpage.content'
   until: '"Log in with OpenShift" in webpage.content'
 
-- name: Check that the grafana webpage is accessible
+- name: "Test|Check that the grafana webpage is accessible"
   uri:
     url: "https://{{ grafana_route.route.spec.host }}"
     return_content: yes
     validate_certs: no
   register: webpage
-  retries: 10
-  delay: 20
+  retries: 20
+  delay: 10
   failed_when:
     - webpage.status == 403
     - '"Log in with OpenShift" not in webpage.content'
   until: '"Log in with OpenShift" in webpage.content'
 
-- name: Get Grafana dashboards configmap
+- name: "Test|Get Grafana dashboards configmap"
   shell: "oc get configmap -o name | grep {{ grafana_dashboards_configmap_name }}"
   register: grafana_dashboards_configmap
   failed_when: grafana_dashboards_configmap_name not in grafana_dashboards_configmap.stdout
 
-- name: Get Grafana dashboards providers configmap
+- name: "Test|Get Grafana dashboards providers configmap"
   shell: "oc get configmap -o name | grep {{ grafana_dashboards_providers_configmap_name }}"
   register: grafana_dashboards_providers_configmap
   failed_when: grafana_dashboards_providers_configmap_name not in grafana_dashboards_providers_configmap.stdout
 
-- name: Get Grafana datasources configmap
+- name: "Test|Get Grafana datasources configmap"
   shell: "oc get configmap -o name | grep {{ grafana_datasources_configmap_name }}"
   register: grafana_datasources_configmap
   failed_when: grafana_datasources_configmap_name not in grafana_datasources_configmap.stdout
 
-- name: Get Grafana ini configmap
+- name: "Test|Get Grafana ini configmap"
   shell: "oc get configmap -o name | grep {{ grafana_ini_configmap_name }}"
   register: grafana_ini_configmap
   failed_when: grafana_ini_configmap_name not in grafana_ini_configmap.stdout
 
-- name: Get Prometheus configmap
+- name: "Test|Get Prometheus configmap"
   shell: "oc get configmap -o name | grep {{ prometheus_configmap_name }}"
   register: prometheus_configmap
   failed_when: prometheus_configmap_name not in prometheus_configmap.stdout
 
-- name: Check that metrics secret exists
+- name: "Test|Check that metrics secret exists"
   shell: "oc get secrets -o name | grep {{ prometheus_secret_name }}"
   register: metrics_secret
   failed_when: prometheus_secret_name not in metrics_secret.stdout

@@ -7,7 +7,7 @@ tags:
   - mobile-service
   - mobile-client-enabled
 metadata:
-  displayName: Metrics
+  displayName: Mobile Metrics
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
   documentationUrl: "https://docs.aerogear.org/external/apb/metrics.html"
   providerDisplayName: "Red Hat, Inc."

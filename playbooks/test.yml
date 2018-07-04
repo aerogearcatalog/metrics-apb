@@ -5,6 +5,7 @@
   connection: local
   vars_files:
   - /opt/ansible/vars/main.yml
+  - /opt/ansible/vars/test.yml
 
   roles:
   - role: ansible.kubernetes-modules
@@ -12,21 +13,14 @@
   - role: ansibleplaybookbundle.asb-modules
   
   post_tasks:
-  - name: Load default variables for testing
-    include_vars: test_defaults.yml
   - name: create project for namespace
     openshift_v1_project:
       name: '{{ namespace }}'
-  - name: Run the provision role.
-    include_role:
-      name: provision-metrics-apb
-  - name: Run the test role.
-    include_role:
-      name: test-provision-apb
-  - name: Run the deprovision role.
-    include_role:
-      name: deprovision-metrics-apb
-  - name: Run the deprovision test role.
-    include_role:
-      name: test-deprovision-apb
-
+  - name: Run the provision role
+    include_role: name=provision-metrics-apb
+  - name: Test provision role
+    include_role: name=test-metrics-apb tasks_from=provision.yml
+  - name: Run the deprovision role
+    include_role: name=deprovision-metrics-apb
+  - name: Test deprovision role
+    include_role: name=test-metrics-apb tasks_from=deprovision.yml
