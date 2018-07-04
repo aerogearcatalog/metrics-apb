@@ -150,7 +150,7 @@
   register: aerogear_app_metrics_result
   until: aerogear_app_metrics_result.stdout.find("1") != -1
   retries: 30
-  delay: 5
+  delay: 10
 
   # Check the containers in the postgres pod and make sure they are all ready
 - name: "Wait for all postgres containers to become ready"
@@ -158,7 +158,7 @@
   register: postgres_result
   until: postgres_result.stdout.find("1") != -1
   retries: 30
-  delay: 5
+  delay: 10
 
 - name: Wait for app-metrics health endpoint to report healthy
   uri:
@@ -168,4 +168,4 @@
   register: app_metrics_health
   until: app_metrics_health.status == 200
   retries: 30
-  delay: 5
+  delay: 10
