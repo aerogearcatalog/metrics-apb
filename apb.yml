@@ -11,10 +11,10 @@ metadata:
   imageUrl: "https://avatars1.githubusercontent.com/u/3380462?s=200&v=4"
   documentationUrl: "https://docs.aerogear.org/external/apb/metrics.html"
   providerDisplayName: "Red Hat, Inc."
-  sdk-docs-android: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
-  sdk-docs-cordova: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
-  sdk-docs-ios: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
-  sdk-docs-xamarin: "https://docs.aerogear.org/aerogear/latest/metrics/index.html"
+  sdk-docs-android: "https://docs.aerogear.org/external/apb/metrics/android.html"
+  sdk-docs-cordova: "https://docs.aerogear.org/external/apb/metrics/cordova.html"
+  sdk-docs-ios: "https://docs.aerogear.org/external/apb/metrics/ios.html"
+  sdk-docs-xamarin: "https://docs.aerogear.org/external/apb/metrics/xamarin.html"
   serviceName: metrics
 plans:
   - name: default
