@@ -5,7 +5,8 @@
     labels:
       app: metrics
       service: aerogear-app-metrics
-    access_modes: [ReadWriteOnce, ReadWriteMany]
+    access_modes:
+      - ReadWriteOnce
     resources_requests:
       storage: '{{ POSTGRES_STORAGE_SIZE }}Gi'
     state: present
