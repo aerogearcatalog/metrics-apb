@@ -34,8 +34,7 @@
     labels:
       app: metrics
       service: prometheus
-    access_modes:
-      - ReadWriteMany
+    access_modes: [ReadWriteOnce, ReadWriteMany]
     resources_requests:
       storage: "{{ GRAFANA_STORAGE_SIZE }}Gi"
     state: present
