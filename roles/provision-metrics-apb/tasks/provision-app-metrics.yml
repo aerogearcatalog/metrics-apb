@@ -78,7 +78,7 @@
     containers:
     - name: aerogear-app-metrics
       image: '{{ api_server_image }}:{{ api_server_version }}'
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       readinessProbe:
         httpGet:
           path: /healthz
