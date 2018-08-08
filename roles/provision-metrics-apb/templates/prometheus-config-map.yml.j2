@@ -83,13 +83,13 @@ scrape_configs:
   # see https://github.com/prometheus/prometheus/blob/03a9e7f72e072c6d29f422425d8acd91a957836b/documentation/examples/prometheus-kubernetes.yml#L246
   # unlike services, no SSL support for pods
   - job_name: mcp-plain-pods
-      scheme: http
-      kubernetes_sd_configs:
-      - role: pod
-        namespaces:
-          names:
-            - {{ namespace }}
-      relabel_configs:
+    scheme: http
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+          - {{ namespace }}
+    relabel_configs:
       - action: keep
         regex: \/.*
         source_labels:
