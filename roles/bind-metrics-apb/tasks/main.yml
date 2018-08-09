@@ -2,8 +2,13 @@
   shell: "oc get configmaps/{{ prometheus_secret_name }} -n {{ namespace }} -o jsonpath={.data.uri}"
   register: metrics_uri
 
+- name: Generate client id
+  shell: tr -d -c "a-zA-Z0-9" < /dev/urandom | head -c 20
+  register: generated_client_id
+
 - set_fact:
     METRICS_URI: "{{ metrics_uri.stdout }}"
+    GENERATED_CLIENT_ID: "{{ generated_client_id.stdout }}"
 
 - name: "Create metrics bind secret yaml file"
   template:
