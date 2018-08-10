@@ -15,6 +15,7 @@
   "editable": false,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -415,11 +416,12 @@
           "colorBackground": true,
           "colorValue": false,
           "colors": [
-            "#d44a3a",
+            "rgba(255, 255, 255, 0)",
             "#7eb26d",
-            "#d44a3a"
+            "rgba(255, 255, 255, 0)"
           ],
           "datasource": "Prometheus",
+          "description": "Number of currently provisioned Data Sync Server pods",
           "format": "none",
           "gauge": {
             "maxValue": 0,
@@ -476,7 +478,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "up{kubernetes_name=\"data-sync-server\"}",
+              "expr": "sum(up{service=\"data-sync-server\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -484,20 +486,15 @@
             }
           ],
           "thresholds": "1",
-          "title": "Provisioned",
+          "title": "Number of Pods",
           "transparent": false,
           "type": "singlestat",
           "valueFontSize": "100%",
           "valueMaps": [
             {
               "op": "=",
-              "text": "No",
+              "text": "0",
               "value": "null"
-            },
-            {
-              "op": "=",
-              "text": "Yes",
-              "value": "1"
             }
           ],
           "valueName": "current"
@@ -563,7 +560,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "nodejs_version_info",
+              "expr": "avg(nodejs_version_info{service=\"data-sync-server\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -574,12 +571,17 @@
           "timeFrom": null,
           "title": "Version",
           "type": "singlestat",
-          "valueFontSize": "80%",
+          "valueFontSize": "100%",
           "valueMaps": [
             {
               "op": "=",
               "text": "1.0",
               "value": "1"
+            },
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
             }
           ],
           "valueName": "avg"
@@ -593,9 +595,9 @@
             "rgba(237, 129, 40, 0.89)",
             "#d44a3a"
           ],
-          "datasource": null,
+          "datasource": "Prometheus",
           "decimals": 1,
-          "description": "Current memory usage",
+          "description": "Current memory usage of all Data Sync pods",
           "format": "bytes",
           "gauge": {
             "maxValue": 2067000000,
@@ -648,7 +650,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(nodejs_heap_size_total_bytes + nodejs_heap_size_used_bytes)",
+              "expr": "sum(process_resident_memory_bytes{service=\"data-sync-server\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "refId": "A"
@@ -732,7 +734,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "rate(process_cpu_user_seconds_total[30s]) * 100",
+              "expr": "sum(rate(process_cpu_user_seconds_total{service=\"data-sync-server\"}[30s]) * 100)",
               "format": "time_series",
               "intervalFactor": 1,
               "refId": "A"
@@ -753,106 +755,23 @@
           "valueName": "current"
         },
         {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": null,
-          "description": "Total count of mutations and queries resolved by Data Sync Server",
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 4,
-            "x": 10,
-            "y": 6
-          },
-          "id": 67,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "sum(requests_resolved)",
-              "format": "time_series",
-              "instant": true,
-              "interval": "",
-              "intervalFactor": 1,
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "timeFrom": null,
-          "title": "Queries & Mutations Resolved",
-          "type": "singlestat",
-          "valueFontSize": "120%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "0",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
-        },
-        {
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
-          "description": "Server response time in milliseconds",
+          "description": "Total number of resolved queries and mutations in time",
           "fill": 2,
           "gridPos": {
             "h": 5,
-            "w": 8,
-            "x": 14,
+            "w": 6,
+            "x": 10,
             "y": 6
           },
           "hideTimeOverride": false,
-          "id": 69,
+          "id": 73,
           "legend": {
+            "alignAsTable": false,
             "avg": false,
             "current": false,
             "max": false,
@@ -877,7 +796,102 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "server_response_ms{request_type=\"POST\"}",
+              "expr": "sum(requests_resolved_total{operation_type=\"query\",service=\"data-sync-server\"})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Query",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(requests_resolved_total{operation_type=\"mutation\",service=\"data-sync-server\"})",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Mutation",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Queries/Mutations Resolved",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "none",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Server response time in milliseconds",
+          "fill": 2,
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 16,
+            "y": 6
+          },
+          "hideTimeOverride": false,
+          "id": 69,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 120,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "avg(server_response_ms_sum{request_type=\"POST\", service=\"data-sync-server\"} / server_response_ms_count{request_type=\"POST\", service=\"data-sync-server\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -886,7 +900,7 @@
               "refId": "A"
             },
             {
-              "expr": "server_response_ms{request_type=\"GET\"}",
+              "expr": "avg(server_response_ms_sum{request_type=\"GET\", service=\"data-sync-server\"} / server_response_ms_count{request_type=\"GET\", service=\"data-sync-server\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "GET",
@@ -894,7 +908,7 @@
             }
           ],
           "thresholds": [],
-          "timeFrom": "72h",
+          "timeFrom": null,
           "timeShift": null,
           "title": "Server response time",
           "tooltip": {
