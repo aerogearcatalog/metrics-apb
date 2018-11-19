@@ -73,6 +73,8 @@
       - --cookie-secret=SECRET
     - name: grafana
       image: '{{ grafana_image }}:{{ grafana_version }}'
+      args:
+        - -config=/etc/grafana/grafana.ini
       ports:
       - container_port: '{{ grafana_port }}'
         protocol: TCP
