@@ -21,8 +21,37 @@
 - name: "Delete binding secret template file"
   file: path=/tmp/bind-secret.yaml state=absent
 
+# Annotate the mobile client
+- name: Get metrics service instance name
+  shell: oc get serviceinstances -n {{ namespace }} -o json | jq '.items[] | select(.spec.externalID=="{{ _apb_service_instance_id }}") | .metadata.name'  | cut -f2 -d'"'
+  register: metrics_si_name
+
+- set_fact:
+    metricsInstanceName: "{{ metrics_si_name.stdout }}"
+
+- set_fact:
+    metricsEndpointAnnotation: "org.aerogear.binding.{{ metricsInstanceName }}/metrics_endpoint"
+    grafanaUrlAnnotation: "org.aerogear.binding.{{ metricsInstanceName }}/grafana_url"
+ 
+- name: Annotate client {{ CLIENT_ID }}
+  shell: 'oc annotate mobileclient {{ CLIENT_ID }} {{ item }} --overwrite=true -n {{ namespace }}'
+  ignore_errors: yes
+  with_items:
+    - "{{ metricsEndpointAnnotation }}='{\"label\": \"Metrics Endpoint\", \"value\": \"{{ _apb_provision_creds.metricsEndpoint }}\", \"type\": \"href\"}'"
+    - "{{ grafanaUrlAnnotation }}='{\"label\": \"Grafana URL\", \"value\": \"{{ _apb_provision_creds.grafanaUrl }}\", \"type\": \"href\"}'"
+
 - name: Encode {{ CLIENT_ID }} credentials
   asb_encode_binding:
     fields:
       clientId: "{{ CLIENT_ID }}"
+      metricsInstanceName: "{{ metricsInstanceName }}"
   when: encode_asb_binding
+
+- name: Populate {{ CLIENT_ID }} APB bind credentials
+  set_fact:
+    _apb_bind_creds: "{{ _apb_bind_creds|default({}) | combine( {item.name: item.value} ) }}"
+  with_items:
+    - { name: clientId, value: '{{ CLIENT_ID }}' }
+    - { name: metricsInstanceName, value: '{{ metricsInstanceName }}' }
+  when: not encode_asb_binding
+  no_log: yes

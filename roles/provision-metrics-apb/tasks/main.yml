@@ -18,4 +18,15 @@
   asb_encode_binding:
     fields:
       namespace: "{{ namespace }}"
+      grafanaUrl: "https://{{ grafana_route.route.spec.host }}"
+      metricsEndpoint: "https://{{ app_metrics_route.route.spec.host }}/metrics"
   when: encode_asb_binding
+
+- name: Populate APB provision credentials
+  set_fact:
+    _apb_provision_creds: "{{ _apb_provision_creds|default({}) | combine( {item.name: item.value} ) }}"
+  with_items:
+    - {name: grafanaUrl, value: "https://{{ grafana_route.route.spec.host }}"}
+    - {name: metricsEndpoint, value: "https://{{ app_metrics_route.route.spec.host }}/metrics"}
+  when: not encode_asb_binding
+  no_log: yes
