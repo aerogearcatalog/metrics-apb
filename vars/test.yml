@@ -1,4 +1,5 @@
 PROMETHEUS_STORAGE_SIZE: 10
 GRAFANA_STORAGE_SIZE: 10
 POSTGRES_STORAGE_SIZE: 10
+_apb_service_instance_id: 'dummy_service_instance_id'
 encode_asb_binding: false
