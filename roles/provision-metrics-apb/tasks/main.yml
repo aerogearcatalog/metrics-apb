@@ -9,12 +9,12 @@
 - name: "Create OAuth Proxy Serviceaccount"
   shell: "oc create -f /tmp/oauth-proxy-sa.yaml -n {{ namespace }}"
 
-- include_tasks: provision-prometheus.yml 
+- include_tasks: provision-prometheus.yml
 - include_tasks: provision-grafana.yml
 - include_tasks: provision-app-metrics.yml
 
 # This is currently needed until https://github.com/openshift/ansible-service-broker/issues/847 is resolved
-- name: "Make data availble for binding"
+- name: "Make data available for binding"
   asb_encode_binding:
     fields:
       namespace: "{{ namespace }}"
