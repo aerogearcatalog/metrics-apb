@@ -1,12 +1,12 @@
 # Prometheus Values
 prometheus_image: "registry.access.redhat.com/openshift3/prometheus"
-prometheus_version: "v3.9"
+prometheus_version: "v3.11"
 prometheus_port: 9090
 prometheus_proxy_port: 4180
 
 # Grafana values
-grafana_image: "docker.io/aerogear/grafana"
-grafana_version: "v5.0.0-pre1"
+grafana_image: "registry.access.redhat.com/openshift3/grafana"
+grafana_version: "v3.11"
 grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
@@ -26,5 +26,5 @@ postgres_password: "{{ POSTGRES_PASSWORD | default(lookup('password', '/tmp/pass
 postgres_database: "aerogear_mobile_metrics"
 
 # OAuth Proxy values
-proxy_image: "docker.io/openshift/oauth-proxy"
-proxy_version: "v1.1.0"
+proxy_image: "registry.access.redhat.com/openshift3/oauth-proxy"
+proxy_version: "v3.11"

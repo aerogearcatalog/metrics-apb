@@ -23,7 +23,7 @@
 
 # Annotate the mobile client
 - name: Get metrics service instance name
-  shell: oc get serviceinstances -n {{ namespace }} -o json | jq '.items[] | select(.spec.externalID=="{{ _apb_service_instance_id }}") | .metadata.name'  | cut -f2 -d'"'
+  shell: oc get serviceinstances -n {{ namespace }} -o jsonpath='{.items[?(@.spec.externalID=="{{ _apb_service_instance_id }}")].metadata.name}'
   register: metrics_si_name
 
 - set_fact:
@@ -32,7 +32,7 @@
 - set_fact:
     metricsEndpointAnnotation: "org.aerogear.binding.{{ metricsInstanceName }}/metrics_endpoint"
     grafanaUrlAnnotation: "org.aerogear.binding.{{ metricsInstanceName }}/grafana_url"
- 
+
 - name: Annotate client {{ CLIENT_ID }}
   shell: 'oc annotate mobileclient {{ CLIENT_ID }} {{ item }} --overwrite=true -n {{ namespace }}'
   ignore_errors: yes

@@ -1,4 +1,3 @@
-
 - name: Create Grafana config from template
   template:
     src: grafana-config-map.ini.j2
@@ -73,6 +72,8 @@
       - --cookie-secret=SECRET
     - name: grafana
       image: '{{ grafana_image }}:{{ grafana_version }}'
+      args:
+        - -config=/etc/grafana/grafana.ini
       ports:
       - container_port: '{{ grafana_port }}'
         protocol: TCP
@@ -208,3 +209,41 @@
   until: org_pref_update_response.status == 200
   delay: 5
   register: org_pref_update_response
+
+- name: Get the name of the Grafana pod
+  shell: oc get pods -n '{{ namespace }}' --selector="deploymentconfig=grafana" -o jsonpath='{.items[0].metadata.name}'
+  register: grafana_pod_name
+  retries: 10
+  until: '"grafana" in grafana_pod_name.stdout'
+  delay: 5
+
+#
+# Add plugins to PV and restart grafana
+# curl -L -o piechart-panel-1.3.3.zip https://grafana.com/api/plugins/grafana-piechart-panel/versions/1.3.3/download
+#
+
+- name: Copy Grafana piechart-panel plugin into temp directory
+  copy:
+    src: grafana-piechart-panel
+    dest: /tmp/grafana-piechart-panel
+
+- name: Copy piechart-panel plugin into grafana container
+  shell: oc cp /tmp/grafana-piechart-panel {{ namespace }}/{{ grafana_pod_name.stdout }}:/var/lib/grafana/plugins -c grafana
+  register: copy_plugin
+  retries: 60
+  until: copy_plugin.rc == 0
+  delay: 5
+
+- name: Restart grafana to pick up on the new plugin (scale down)
+  shell: oc scale --replicas=0 --namespace={{ namespace }} dc grafana
+
+- name: Restart grafana to pick up on the new plugin (scale up)
+  shell: oc scale --replicas=1 --namespace={{ namespace }} dc grafana
+  delay: 10
+
+- name: Wait for all grafana containers to become ready again
+  shell: oc get pods --namespace={{ namespace }} --selector="deploymentconfig=grafana" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}'| wc -w
+  register: grafana_result
+  until: grafana_result.stdout.find("2") != -1
+  retries: 30
+  delay: 10
