@@ -397,7 +397,7 @@
       "id": 4,
       "panels": [
         {
-          "content": "# Data Synchronization\n\nSync mobile data synchronization framework allows Sync Apps to seamessly continue working when the network conection is lost, and allows them to recover when the network connection is restored.\n\nFind out more at [docs.aerogear.org](https://docs.aerogear.org/aerogear/latest/data_sync.html)!",
+          "content": "# Data Synchronization\n\nSync mobile data synchronization framework allows Sync Apps to seamessly continue working when the network conection is lost, and allows them to recover when the network connection is restored.\n\nFind out more at [docs.aerogear.org](https://docs.aerogear.org/aerogear/latest/data-sync.html)!",
           "gridPos": {
             "h": 4,
             "w": 14,
