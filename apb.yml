@@ -89,13 +89,13 @@ plans:
       - name: custom_prometheus_image
         title: Prometheus container image
         description: The image to use for the Prometheus server (You shouldn't need to change this)
-        default: registry.access.redhat.com/openshift3/prometheus:v3.11
+        default: docker.io/openshift/origin-prometheus:v3.11
         type: string
         required: True
       - name: custom_grafana_image
         title: Grafana container image
         description: The image to use for the Grafana server (You shouldn't need to change this)
-        default: registry.access.redhat.com/openshift3/grafana:v3.11
+        default: docker.io/grafana/grafana:5.2.3
         type: string
         required: True
       - name: custom_api_server_image
