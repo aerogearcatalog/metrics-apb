@@ -201,6 +201,15 @@
   set_fact:
     org_preferences: "{{org_preferences_response.json}}"
 
+- debug:
+    msg: "Registered var: {{ mobile_services_dashboard_search_response }}"
+
+- debug:
+    msg: "Registered var json: {{ mobile_services_dashboard_search_response.json }}"
+
+- debug:
+    msg: "Registered var json [0]: {{ mobile_services_dashboard_search_response.json[0] }}"
+
 - name: "Change home dashboard id to mobile-services dashboard id {{ mobile_services_dashboard_search_response.json[0]['id'] }}"
   set_fact:
     org_preferences: "{{ org_preferences | combine({'homeDashboardId': mobile_services_dashboard_search_response.json[0]['id']}) }}"
