@@ -33,7 +33,12 @@ node ("ocp-slave") {
             returnStdout: true
         ).trim()
         
-        sh "docker logs -f ${pod_container_id}"
+        test_playbook_output = sh (
+            script: "docker logs -f ${pod_container_id}",
+            returnStdout: true
+        ).trim()
+        
+        echo test_playbook_output
     }
     
     stage('Get APB container logs and evaluate test result') {
@@ -46,7 +51,7 @@ node ("ocp-slave") {
 
         echo apb_pod_output
         
-        if ( apb_pod_output.contains("Pod phase Failed") ) {
+        if ( apb_pod_output.contains("Pod phase Failed") || !test_playbook_output.contains("failed=0") ) {
             error("APB test failed.")
         }
     }
