@@ -31,7 +31,7 @@
           "content": "# Keycloak\n\nKeycloak is an open source Identity and Access Management solution aimed at modern applications and services. It makes it easy to secure applications and services with little to no code.\n\nFind out more at [keycloak.org](http://www.keycloak.org/)!\n\n",
           "gridPos": {
             "h": 4,
-            "w": 14,
+            "w": 10,
             "x": 0,
             "y": 1
           },
@@ -63,9 +63,10 @@
           "gridPos": {
             "h": 4,
             "w": 4,
-            "x": 14,
+            "x": 10,
             "y": 1
           },
+          "hideTimeOverride": true,
           "id": 15,
           "interval": null,
           "links": [],
@@ -116,6 +117,7 @@
             }
           ],
           "thresholds": "1",
+          "timeFrom": "5s",
           "title": "Provisioned",
           "transparent": false,
           "type": "singlestat",
@@ -157,9 +159,10 @@
           "gridPos": {
             "h": 4,
             "w": 4,
-            "x": 18,
+            "x": 14,
             "y": 1
           },
+          "hideTimeOverride": true,
           "id": 78,
           "interval": null,
           "links": [],
@@ -210,7 +213,99 @@
             }
           ],
           "thresholds": "682e6, 1364e6",
+          "timeFrom": "5s",
           "title": "Current memory",
+          "transparent": false,
+          "type": "singlestat",
+          "valueFontSize": "50%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "#629e51",
+            "#f9934e",
+            "#d44a3a"
+          ],
+          "datasource": "Prometheus",
+          "decimals": 1,
+          "description": "Current CPU usage of Keycloak",
+          "format": "percent",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": null,
+            "show": true,
+            "thresholdLabels": false,
+            "thresholdMarkers": false
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 18,
+            "y": 1
+          },
+          "hideTimeOverride": true,
+          "id": 79,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "No",
+              "to": "null"
+            },
+            {
+              "from": "0",
+              "text": "Yes",
+              "to": "999999"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "expr": "sum(rate(process_cpu_seconds_total{kubernetes_name=\"keycloak\"}[30s]) * 100)",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": "682e6, 1364e6",
+          "timeFrom": "5s",
+          "title": "CPU Usage",
           "transparent": false,
           "type": "singlestat",
           "valueFontSize": "50%",
@@ -417,7 +512,7 @@
             "h": 7,
             "w": 11,
             "x": 0,
-            "y": 13
+            "y": 2
           },
           "id": 2,
           "links": [],
@@ -432,7 +527,7 @@
             "h": 7,
             "w": 13,
             "x": 11,
-            "y": 13
+            "y": 2
           },
           "headings": false,
           "id": 77,
@@ -1513,6 +1608,5 @@
   },
   "timezone": "",
   "title": "Mobile Services",
-  "uid": "iCu4wYXik",
   "version": 1
 }
