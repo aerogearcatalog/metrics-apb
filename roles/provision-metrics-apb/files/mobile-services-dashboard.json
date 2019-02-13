@@ -15,7 +15,6 @@
   "editable": false,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
   "links": [],
   "panels": [
     {
@@ -109,7 +108,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "keycloak_info",
+              "expr": "jvm_info{kubernetes_name=\"keycloak\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -140,18 +139,20 @@
           "colorBackground": false,
           "colorValue": false,
           "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
+            "#629e51",
+            "#f9934e",
             "#d44a3a"
           ],
           "datasource": "Prometheus",
-          "format": "none",
+          "decimals": 1,
+          "description": "Memory currently being used by Keycloak.",
+          "format": "bytes",
           "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
+            "maxValue": 2067000000,
+            "minValue": null,
+            "show": true,
             "thresholdLabels": false,
-            "thresholdMarkers": true
+            "thresholdMarkers": false
           },
           "gridPos": {
             "h": 4,
@@ -159,7 +160,7 @@
             "x": 18,
             "y": 1
           },
-          "id": 16,
+          "id": 78,
           "interval": null,
           "links": [],
           "mappingType": 1,
@@ -183,8 +184,13 @@
           "rangeMaps": [
             {
               "from": "null",
-              "text": "N/A",
+              "text": "No",
               "to": "null"
+            },
+            {
+              "from": "0",
+              "text": "Yes",
+              "to": "999999"
             }
           ],
           "sparkline": {
@@ -196,17 +202,18 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "keycloak_info",
+              "expr": "max(jvm_memory_bytes_used{area=\"heap\"}) + max(jvm_memory_bytes_used{area=\"nonheap\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
               "refId": "A"
             }
           ],
-          "thresholds": "",
-          "title": "Version",
+          "thresholds": "682e6, 1364e6",
+          "title": "Current memory",
+          "transparent": false,
           "type": "singlestat",
-          "valueFontSize": "80%",
+          "valueFontSize": "50%",
           "valueMaps": [
             {
               "op": "=",
@@ -214,7 +221,7 @@
               "value": "null"
             }
           ],
-          "valueName": "avg"
+          "valueName": "current"
         },
         {
           "aliasColors": {},
@@ -410,7 +417,7 @@
             "h": 7,
             "w": 11,
             "x": 0,
-            "y": 2
+            "y": 13
           },
           "id": 2,
           "links": [],
@@ -425,7 +432,7 @@
             "h": 7,
             "w": 13,
             "x": 11,
-            "y": 2
+            "y": 13
           },
           "headings": false,
           "id": 77,
@@ -1506,5 +1513,6 @@
   },
   "timezone": "",
   "title": "Mobile Services",
+  "uid": "iCu4wYXik",
   "version": 1
 }
