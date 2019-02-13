@@ -28,3 +28,6 @@ postgres_database: "aerogear_mobile_metrics"
 # OAuth Proxy values
 proxy_image: "registry.access.redhat.com/openshift3/oauth-proxy"
 proxy_version: "v3.11"
+
+# Keycloak values
+keycloak_dashboard_configmap_name: keycloak-dashboard.json
