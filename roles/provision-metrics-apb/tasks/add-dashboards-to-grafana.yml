@@ -1,0 +1,18 @@
+- name: "Get {{ item }}'s configmap content"
+  shell: "oc get configmap {{ item }} -n {{ namespace }} -o jsonpath='{.data.{{ item | replace('.', '\\.') }} }'"
+  register: get_configmap_output
+
+- name: "Save {{ item }} content to variable"
+  set_fact:
+    dashboard_content: "{{ get_configmap_output.stdout }}"
+
+- include_role:
+    name: oc-patch-file-to-configmap
+  vars:
+    file_contents: "{{ dashboard_content }}"
+    filename: "{{ item }}"
+    configmap: "{{ grafana_dashboards_configmap_name }}"
+    namespace: "{{ namespace }}"
+
+- name: "Delete configmap {{ item }} from the namespace since it's not needed anymore"
+  shell: "oc delete configmap {{ item }} -n {{ namespace }}"
