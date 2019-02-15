@@ -26,27 +26,14 @@
       --from-file=mobile-app-security-dashboard.json={{ role_path }}/files/mobile-app-security-dashboard.json \
       -n '{{ namespace }}'
 
-- name: "Check if {{ keycloak_dashboard_configmap_name }} configmap exists in the namespace"
-  shell: "oc get configmap {{ keycloak_dashboard_configmap_name }} -n {{ namespace }} -o jsonpath='{.data.keycloak-dashboard\\.json}'"
-  register: get_keycloak_configmap_output
+- name: "Check if compatible configmap(s) with dashboards exist in the namespace"
+  shell: "oc get configmap -n {{ namespace }} | grep -oE 'sync-app.*.json|keycloak.*.json'"
+  register: get_dashboard_configmaps_output
   ignore_errors: yes
 
-- block:
-  - name: "Save {{ keycloak_dashboard_configmap_name }} content to variable"
-    set_fact: 
-      keycloak_dashboard_content: "{{ get_keycloak_configmap_output.stdout }}"
-
-  - include_role:
-      name: oc-patch-file-to-configmap
-    vars:
-      file_contents: "{{ keycloak_dashboard_content }}"
-      filename: "{{ keycloak_dashboard_configmap_name }}"
-      configmap: "grafana-dashboards-configmap"
-      namespace: "{{ namespace }}"
-
-  - name: "Delete configmap {{ keycloak_dashboard_configmap_name }} from the namespace since it's not needed anymore"
-    shell: "oc delete configmap {{ keycloak_dashboard_configmap_name }} -n {{ namespace }}"
-  when: get_keycloak_configmap_output.rc == 0
+- include_tasks: add-dashboards-to-grafana.yml
+  with_items: "{{ get_dashboard_configmaps_output.stdout_lines }}"
+  when: get_dashboard_configmaps_output.rc == 0
 
 - name: Grafana PVC
   k8s_v1_persistent_volume_claim:
