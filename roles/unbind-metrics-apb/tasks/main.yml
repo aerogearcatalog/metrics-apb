@@ -1,17 +1,25 @@
-- name: Delete {{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }} secret
-  k8s_v1_secret:
-    name: "{{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }}"
-    namespace: "{{ namespace }}"
-    state: absent
+- name: Perform unbind
+  block:
+    - name: Delete {{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }} secret
+      k8s_v1_secret:
+        name: "{{ prometheus_secret_name }}-{{ _apb_bind_creds.clientId }}"
+        namespace: "{{ namespace }}"
+        state: absent
+    
+    # Remove annotation from mobile client 
+    - set_fact:
+        metricsEndpointAnnotation: "org.aerogear.binding.{{ _apb_bind_creds.metricsInstanceName }}/metrics_endpoint"
+        grafanaUrlAnnotation: "org.aerogear.binding.{{ _apb_bind_creds.metricsInstanceName }}/grafana_url"
+      
+    - name: Remove annotations from client {{ _apb_bind_creds.clientId }}
+      shell: "oc annotate mobileclient {{ _apb_bind_creds.clientId }} {{ item }}- -n {{ namespace }}"
+      ignore_errors: yes
+      with_items:
+        - "{{ metricsEndpointAnnotation }}"
+        - "{{ grafanaUrlAnnotation }}"
 
-# Remove annotation from mobile client 
-- set_fact:
-    metricsEndpointAnnotation: "org.aerogear.binding.{{ _apb_bind_creds.metricsInstanceName }}/metrics_endpoint"
-    grafanaUrlAnnotation: "org.aerogear.binding.{{ _apb_bind_creds.metricsInstanceName }}/grafana_url"
+  when: _apb_bind_creds is defined
+  rescue:
+    - debug:
+      msg: "An error has occured"
 
-- name: Remove annotations from client {{ _apb_bind_creds.clientId }}
-  shell: "oc annotate mobileclient {{ _apb_bind_creds.clientId }} {{ item }}- -n {{ namespace }}"
-  ignore_errors: yes
-  with_items:
-    - "{{ metricsEndpointAnnotation }}"
-    - "{{ grafanaUrlAnnotation }}"
