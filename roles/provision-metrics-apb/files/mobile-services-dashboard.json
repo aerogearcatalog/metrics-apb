@@ -493,7 +493,7 @@
           }
         }
       ],
-      "title": "Keycloak",
+      "title": "Identity Management",
       "type": "row"
     },
     {
