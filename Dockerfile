@@ -39,10 +39,7 @@ dWUKICAgICAgICB0aXRsZTogTW9iaWxlIENsaWVudCBJRAogICAgICAgIHR5cGU6IHN0cmluZwog\
 ICAgICAgIAo="
 
 
-
-
-
-
+COPY playbooks /opt/apb/project
 COPY playbooks /opt/apb/actions
 COPY roles /opt/ansible/roles
 COPY vars /opt/ansible/vars
