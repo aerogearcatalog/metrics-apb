@@ -1,6 +1,0 @@
-name: metrics
-title: AeroGear Metrics Mobile Service
-version: 'latest'
-start_ROOT: ROOT:index.adoc
-nav:
-- modules/ROOT/nav.adoc
