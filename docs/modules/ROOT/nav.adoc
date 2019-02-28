@@ -1,8 +1,0 @@
-* xref:index.adoc[Overview]
-* xref:using-mobile-services-dashboard.adoc[Using the Mobile Services Dashboard]
-* xref:using-dashboards.adoc[Using Dashboards]
-* xref:giving-an-openshift-user-access-to-metrics.adoc[Sharing Access to Dashboards]
-* xref:app_metrics_guide.adoc[Analyzing App Usage]
-* xref:manually-adding-services-to-metrics.adoc[Manually Adding Services to Metrics]
-* xref:making-mobile-services-discoverable-by-metrics.adoc[Making Services Discoverable]
-* xref:keycloak-dashboard.adoc[Using the Keycloak Dashboard]
