@@ -28,7 +28,7 @@
       "id": 13,
       "panels": [
         {
-          "content": "# Keycloak\n\nKeycloak is an open source Identity and Access Management solution aimed at modern applications and services. It makes it easy to secure applications and services with little to no code.\n\nFind out more at [keycloak.org](http://www.keycloak.org/)!\n\n",
+          "content": "# Identity Management\n\nEasily implement Identity and Access Management to secure applications and services with little to no code.\n\nFind out more at [docs.aerogear.org](https://docs.aerogear.org/aerogear/latest/identity-management.html)!\n\n",
           "gridPos": {
             "h": 4,
             "w": 10,
