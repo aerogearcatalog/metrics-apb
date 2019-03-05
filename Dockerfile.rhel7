@@ -182,7 +182,7 @@ ICAgdHlwZTogc3RyaW5nCiAgICAgICAgcmVxdWlyZWQ6IEZhbHNlCiAgICAgICAgdGl0bGU6IFBv\
 c3RncmVzIFBhc3N3b3JkCiAgICBiaW5kX3BhcmFtZXRlcnM6CiAgICAgIC0gbmFtZTogQ0xJRU5U\
 X0lECiAgICAgICAgcmVxdWlyZWQ6IFRydWUKICAgICAgICB0aXRsZTogTW9iaWxlIENsaWVudCBJ\
 RAogICAgICAgIHR5cGU6IHN0cmluZwogICAgICAgIAo=" \
-      name="mobile/mobile-app-metrics-apb" \
+      name="mobile-1-tech-preview/mobile-app-metrics-apb" \
       maintainer="Red Hat Mobile team" \
       version="1.0.0"
 
