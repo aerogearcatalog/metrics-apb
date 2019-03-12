@@ -36,7 +36,7 @@
     spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
     - name: prometheus-oauth-proxy
-      image: '{{ proxy_image }}:{{ proxy_version }}'
+      image: '{{ proxy_image }}'
       imagePullPolicy: IfNotPresent
       ports:
       - containerPort: '{{ prometheus_proxy_port }}'
@@ -51,7 +51,7 @@
       - --https-address=
       - --cookie-secret=SECRET
     - env:
-      image: '{{ prometheus_image }}:{{ prometheus_version }}'
+      image: '{{ prometheus_image }}'
       name: prometheus
       ports:
       - container_port: '{{ prometheus_port }}'
@@ -127,7 +127,7 @@
   when: _apb_service_instance_id is not defined
 
 - name: "Create prometheus secret"
-  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"  
+  shell: "oc create -f /tmp/secret.yaml -n {{ namespace }}"
 
 # Check the containers in the prometheus pod and make sure they are all ready
 - name: "Wait for all prometheus containers to become ready"

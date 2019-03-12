@@ -27,7 +27,7 @@
       service: aerogear-app-metrics
     containers:
     - name: postgresql
-      image: "{{ postgres_image }}:{{ postgres_version }}"
+      image: "{{ postgres_image }}"
       imagePullPolicy: IfNotPresent
       ports:
         - container_port: "{{ postgres_port }}"
@@ -77,7 +77,7 @@
       service: aerogear-app-metrics
     containers:
     - name: aerogear-app-metrics
-      image: '{{ api_server_image }}:{{ api_server_version }}'
+      image: '{{ api_server_image }}'
       imagePullPolicy: Always
       readinessProbe:
         httpGet:
