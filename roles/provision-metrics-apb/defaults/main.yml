@@ -1,30 +1,30 @@
 # Prometheus Values
-prometheus_image: "registry.access.redhat.com/openshift3/prometheus"
-prometheus_version: "v3.11"
+default_prometheus_image: registry.access.redhat.com/openshift3/prometheus:v3.11
+prometheus_image: '{{ custom_prometheus_image | default(default_prometheus_image, true) }}'
 prometheus_port: 9090
 prometheus_proxy_port: 4180
 
 # Grafana values
-grafana_image: "registry.access.redhat.com/openshift3/grafana"
-grafana_version: "v3.11"
+default_grafana_image: registry.access.redhat.com/openshift3/grafana:v3.11
+grafana_image: '{{ custom_grafana_image | default(default_grafana_image, true) }}'
 grafana_port: 3000
 grafana_proxy_port: 4181
 grafana_log_level: debug
 grafana_admin_username: admin
 
 # Api server values
-api_server_image: "docker.io/aerogear/aerogear-app-metrics"
-api_server_version: "0.0.13"
+default_api_server_image: docker.io/aerogear/aerogear-app-metrics:0.0.13
+api_server_image: '{{ custom_api_server_image | default(default_api_server_image, true) }}'
 api_server_port: 3000
 
 # Postgres values
-postgres_image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
-postgres_version: "1"
+default_postgres_image: docker.io/centos/postgresql-96-centos7:9.6
+postgres_image: '{{ custom_postgres_image | default(default_postgres_image, true) }}'
 postgres_port: 5432
 postgres_user: "{{ POSTGRES_USER | default('user', true) }}"
 postgres_password: "{{ POSTGRES_PASSWORD | default(lookup('password', '/tmp/pass chars=ascii_letters,digits'), true) }}"
 postgres_database: "aerogear_mobile_metrics"
 
 # OAuth Proxy values
-proxy_image: "registry.access.redhat.com/openshift3/oauth-proxy"
-proxy_version: "v3.11"
+default_proxy_image: docker.io/openshift/oauth-proxy:v1.1.0
+proxy_image: '{{ custom_proxy_image | default(default_proxy_image, true) }}'

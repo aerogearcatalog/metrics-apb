@@ -14,12 +14,13 @@ metadata:
   serviceName: metrics
 plans:
   - name: default
-    description: This plan sets up Prometheus and Grafana for metrics and data visualisation
+    description: This plan should be used in most use cases
     free: True
     metadata:
+      displayName: Default
       mobileclient_bind_parameters_data:
         - '{"name": "CLIENT_ID", "value": "metadata.name", "type": "path"}'
-    parameters: 
+    parameters:
       - name: GRAFANA_STORAGE_SIZE
         required: True
         default: 10
@@ -51,4 +52,72 @@ plans:
         required: True
         title: Mobile Client ID
         type: string
-        
+  - name: custom
+    description: This plan can be used if images need to be customized
+    free: True
+    metadata:
+      displayName: User Specified
+      mobileclient_bind_parameters_data:
+        - '{"name": "CLIENT_ID", "value": "metadata.name", "type": "path"}'
+    parameters:
+      - name: GRAFANA_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Grafana Storage Size (Gb)
+      - name: PROMETHEUS_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Prometheus Storage Size (Gb)
+      - name: POSTGRES_STORAGE_SIZE
+        required: True
+        default: 10
+        type: number
+        title: Postgres Storage Size (Gb)
+      - name: POSTGRES_USER
+        description: Username that will be used to connect to postgres ('user' will be used if blank)
+        default: user
+        type: string
+        required: False
+        title: Postgres User
+      - name: POSTGRES_PASSWORD
+        description: Password to connect to Postgres (generated if blank)
+        type: string
+        required: False
+        title: Postgres Password
+      - name: custom_prometheus_image
+        title: Prometheus container image
+        description: The image to use for the Prometheus server (You shouldn't need to change this)
+        default: registry.access.redhat.com/openshift3/prometheus:v3.11
+        type: string
+        required: True
+      - name: custom_grafana_image
+        title: Grafana container image
+        description: The image to use for the Grafana server (You shouldn't need to change this)
+        default: registry.access.redhat.com/openshift3/grafana:v3.11
+        type: string
+        required: True
+      - name: custom_api_server_image
+        title: App Metrics container image
+        description: The image to use for the App Metrics server (You shouldn't need to change this)
+        default: docker.io/aerogear/aerogear-app-metrics:0.0.13
+        type: string
+        required: True
+      - name: custom_postgres_image
+        title: PostgreSQL container image
+        description: The image to use for the PostgreSQL database server (You shouldn't need to change this)
+        default: docker.io/centos/postgresql-96-centos7:9.6
+        type: string
+        required: True
+      - name: custom_proxy_image
+        title: OpenShift OAuth Proxy container image
+        description: The image to use for the OAuth Proxy (You shouldn't need to change this)
+        default: docker.io/openshift/oauth-proxy:v1.1.0
+        type: string
+        required: True
+    bind_parameters:
+      - name: CLIENT_ID
+        required: True
+        title: Mobile Client ID
+        type: string

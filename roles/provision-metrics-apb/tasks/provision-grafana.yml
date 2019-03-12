@@ -65,7 +65,7 @@
     spec_template_spec_service_account_name: '{{ proxy_serviceaccount_name }}'
     containers:
     - name: grafana-oauth-proxy
-      image: '{{ proxy_image }}:{{ proxy_version }}'
+      image: '{{ proxy_image }}'
       imagePullPolicy: IfNotPresent
       ports:
       - containerPort: '{{ grafana_proxy_port }}'
@@ -80,7 +80,7 @@
       - --https-address=
       - --cookie-secret=SECRET
     - name: grafana
-      image: '{{ grafana_image }}:{{ grafana_version }}'
+      image: '{{ grafana_image }}'
       args:
         - -config=/etc/grafana/grafana.ini
       ports:
