@@ -205,7 +205,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "max(jvm_memory_bytes_used{area=\"heap\"}) + max(jvm_memory_bytes_used{area=\"nonheap\"})",
+              "expr": "max(jvm_memory_bytes_used{area=\"heap\", kubernetes_name=\"keycloak\"}) + max(jvm_memory_bytes_used{area=\"nonheap\", kubernetes_name=\"keycloak\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
