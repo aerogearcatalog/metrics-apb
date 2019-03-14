@@ -101,7 +101,7 @@ plans:
       - name: custom_api_server_image
         title: App Metrics container image
         description: The image to use for the App Metrics server (You shouldn't need to change this)
-        default: docker.io/aerogear/aerogear-app-metrics:0.0.13
+        default: docker.io/aerogear/aerogear-app-metrics:0.0.14
         type: string
         required: True
       - name: custom_postgres_image
