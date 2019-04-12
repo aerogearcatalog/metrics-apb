@@ -37,7 +37,7 @@
     containers:
     - name: prometheus-oauth-proxy
       image: '{{ proxy_image }}'
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       ports:
       - containerPort: '{{ prometheus_proxy_port }}'
         name: public
@@ -52,6 +52,7 @@
       - --cookie-secret=SECRET
     - env:
       image: '{{ prometheus_image }}'
+      imagePullPolicy: Always
       name: prometheus
       ports:
       - container_port: '{{ prometheus_port }}'
