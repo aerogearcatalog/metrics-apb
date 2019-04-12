@@ -1,11 +1,11 @@
 # Prometheus Values
-default_prometheus_image: registry.access.redhat.com/openshift3/prometheus:v3.11
+default_prometheus_image: docker.io/openshift/origin-prometheus:v3.11
 prometheus_image: '{{ custom_prometheus_image | default(default_prometheus_image, true) }}'
 prometheus_port: 9090
 prometheus_proxy_port: 4180
 
 # Grafana values
-default_grafana_image: registry.access.redhat.com/openshift3/grafana:v3.11
+default_grafana_image: docker.io/grafana/grafana:5.2.3
 grafana_image: '{{ custom_grafana_image | default(default_grafana_image, true) }}'
 grafana_port: 3000
 grafana_proxy_port: 4181
